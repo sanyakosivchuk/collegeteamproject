@@ -1,0 +1,30 @@
+<div data-controller="game"
+     data-game-uuid-value="<%= @game.uuid %>"
+     data-game-player-value="<%= session["game_#{@game.uuid}_player_role"] %>">
+  <h2>You are Player <%= session["game_#{@game.uuid}_player_role"] %></h2>
+  
+  <div id="turn-info" class="mb-2"></div>
+  <div id="message" class="mb-2"></div>
+  
+  <h3>Your Board</h3>
+  <div id="player-board" class="grid grid-cols-10 gap-1 mb-4">
+    <% 10.times do |row| %>
+      <% 10.times do |col| %>
+        <div id="player-cell-<%= row %>-<%= col %>" class="w-10 h-10 border flex items-center justify-center"></div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <h3>Opponent's Board</h3>
+  <div id="opponent-board" class="grid grid-cols-10 gap-1">
+    <% 10.times do |row| %>
+      <% 10.times do |col| %>
+        <div id="opponent-cell-<%= row %>-<%= col %>"
+             data-action="click->game#fire"
+             data-x="<%= col %>"
+             data-y="<%= row %>"
+             class="w-10 h-10 border flex items-center justify-center cursor-pointer"></div>
+      <% end %>
+    <% end %>
+  </div>
+</div>
