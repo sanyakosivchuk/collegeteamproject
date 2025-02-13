@@ -1,30 +1,53 @@
 <div data-controller="game"
      data-game-uuid-value="<%= @game.uuid %>"
-     data-game-player-value="<%= session["game_#{@game.uuid}_player_role"] %>">
-  <h2>You are Player <%= session["game_#{@game.uuid}_player_role"] %></h2>
+     data-game-player-value="<%= session["game_#{@game.uuid}_player_role"] %>" class="">
+  <h2 class="text-center">You are Player <%= session["game_#{@game.uuid}_player_role"] %></h2>
   
-  <div id="turn-info" class="mb-2"></div>
-  <div id="message" class="mb-2"></div>
-  
-  <h3>Your Board</h3>
-  <div id="player-board" class="grid grid-cols-10 gap-1 mb-4">
-    <% 10.times do |row| %>
-      <% 10.times do |col| %>
-        <div id="player-cell-<%= row %>-<%= col %>" class="w-10 h-10 border flex items-center justify-center"></div>
-      <% end %>
-    <% end %>
-  </div>
+  <div id="turn-info" class="mb-2 text-center"></div>
+  <div id="message" class="mb-2 text-center"></div>
 
-  <h3>Opponent's Board</h3>
-  <div id="opponent-board" class="grid grid-cols-10 gap-1">
-    <% 10.times do |row| %>
-      <% 10.times do |col| %>
-        <div id="opponent-cell-<%= row %>-<%= col %>"
-             data-action="click->game#fire"
-             data-x="<%= col %>"
-             data-y="<%= row %>"
-             class="w-10 h-10 border flex items-center justify-center cursor-pointer"></div>
-      <% end %>
-    <% end %>
+  <div class="flex flex-col lg:flex-row gap-16 lg:gap-52 pb-16 lg:pb-0">
+    <div>
+      <h3 class="text-center">Your Board</h3>
+      <div class="grid grid-cols-11 gap-1">
+        <div class="w-10 h-10"></div>
+        <% ('А'..'Й').each do |letter| %>
+          <div class="w-10 h-10 flex items-center justify-center font-bold"><%= letter %></div>
+        <% end %>
+      </div>
+
+      <div id="player-board" class="grid grid-cols-11 gap-1">
+        <% 10.times do |row| %>
+          <div class="w-10 h-10 flex items-center justify-center font-bold"><%= row + 1 %></div>
+
+          <% 10.times do |col| %>
+            <div id="player-cell-<%= row %>-<%= col %>" class="w-10 h-10 border flex items-center justify-center"></div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <div>
+      <h3 class="text-center">Opponent's Board</h3>
+      <div class="grid grid-cols-11 gap-1">
+        <div class="w-10 h-10"></div>
+        <% ('А'..'Й').each do |letter| %>
+          <div class="w-10 h-10 flex items-center justify-center font-bold"><%= letter %></div>
+        <% end %>
+      </div>
+
+      <div id="opponent-board" class="grid grid-cols-11 gap-1">
+        <% 10.times do |row| %>
+          <div class="w-10 h-10 flex items-center justify-center font-bold"><%= row + 1 %></div>
+          <% 10.times do |col| %>
+            <div id="opponent-cell-<%= row %>-<%= col %>"
+                 data-action="click->game#fire"
+                 data-x="<%= col %>"
+                 data-y="<%= row %>"
+                 class="w-10 h-10 border flex items-center justify-center cursor-pointer"></div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
   </div>
 </div>
