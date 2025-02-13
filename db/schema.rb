@@ -10,8 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 0) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_10_102720) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
+  create_table "games", force: :cascade do |t|
+    t.string "uuid", null: false
+    t.string "status", default: "waiting"
+    t.json "player1_board", default: {}
+    t.json "player2_board", default: {}
+    t.integer "current_turn", default: 1
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "player1_session"
+    t.string "player2_session"
+    t.index ["uuid"], name: "index_games_on_uuid", unique: true
+  end
 end
