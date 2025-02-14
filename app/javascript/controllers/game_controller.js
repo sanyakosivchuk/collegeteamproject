@@ -35,6 +35,10 @@ export default class extends Controller {
       } else {
         this.displayMessage(data.message, "green");
         this.updateBoard(data.game);
+        if (data.game.status.startsWith("finished")) {
+          this.showGameOverButtons(data.game.status);
+          clearInterval(this.pollInterval);
+        }
       }
     })
     .catch(error => {
@@ -50,6 +54,10 @@ export default class extends Controller {
     .then(response => response.json())
     .then(game => {
       this.updateBoard(game);
+      if (game.status.startsWith("finished")) {
+        this.showGameOverButtons(game.status);
+        clearInterval(this.pollInterval); // Зупиняємо оновлення стану
+      }
     })
     .catch(error => console.error("Polling error:", error));
   }
@@ -117,5 +125,31 @@ export default class extends Controller {
     if (turnInfo) {
       turnInfo.textContent = `Current turn: Player ${game.current_turn}`;
     }
+  }
+  showGameOverButtons(status) {
+    const container = document.createElement("div");
+    container.className = "flex flex-col items-center gap-4 mt-4";
+
+    const winnerText = document.createElement("h2");
+    winnerText.className = "text-xl font-bold text-center";
+    if (status.includes("player1_won")) {
+      winnerText.textContent = "Game ended! Player 1 won!";
+    } else if (status.includes("player2_won")) {
+      winnerText.textContent = "Game ended! Player 2 won!";
+    }
+
+    const buttonContainer = document.createElement("div");
+    buttonContainer.className = "flex gap-4";
+
+    const homeButton = document.createElement("a");
+    homeButton.href = "/";
+    homeButton.innerText = "Main menu";
+    homeButton.className = "bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600";
+
+    buttonContainer.appendChild(homeButton);
+    container.appendChild(winnerText);
+    container.appendChild(buttonContainer);
+
+    document.getElementById("message").appendChild(container);
   }
 }
