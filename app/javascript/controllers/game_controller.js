@@ -74,7 +74,7 @@ export default class extends Controller {
       for (let col = 0; col < ownBoard[row].length; col++) {
         const cellValue = ownBoard[row][col];
         const cellDiv = document.getElementById(`player-cell-${row}-${col}`);
-        let newClass = "w-10 h-10 border flex items-center justify-center ";
+        let newClass = "w-10 h-10 border flex items-center justify-center rounded-lg ";
         if (cellValue === "ship") {
           newClass += "bg-yellow-300";
           cellDiv.textContent = "S";
@@ -97,7 +97,7 @@ export default class extends Controller {
       for (let col = 0; col < opponentBoard[row].length; col++) {
         const cellValue = opponentBoard[row][col];
         const cellDiv = document.getElementById(`opponent-cell-${row}-${col}`);
-        let newClass = "w-10 h-10 border flex items-center justify-center cursor-pointer ";
+        let newClass = "w-10 h-10 border flex items-center justify-center cursor-pointer rounded-lg ";
         if (cellValue === "hit") {
           newClass += "bg-red-500";
           cellDiv.textContent = "X";
