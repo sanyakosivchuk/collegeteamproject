@@ -73,10 +73,10 @@ class GamesController < ApplicationController
 
     game_over = false
 
-    if cell == "ship"
+    if cell.to_s.start_with?("ship_")
       board[y][x] = "hit"
       # Only declare victory if there are no remaining ship cells.
-      if board.flatten.none? { |c| c == "ship" }
+      if board.flatten.none? { |c| c.to_s.start_with?("ship_") }
         @game.status = "finished_player#{player}_won"
         message = "Hit! You sunk all opponent's ships. Player #{player} wins!"
         game_over = true
@@ -148,9 +148,10 @@ class GamesController < ApplicationController
         positions = (start_y...(start_y + size)).map { |y| [ y, start_x ] }
       end
 
-      # Check that every chosen cell is empty.
       if positions.all? { |row, col| board[row][col] == "empty" }
-        positions.each { |row, col| board[row][col] = "ship" }
+        positions.each do |row, col|
+          board[row][col] = "ship_#{size}"
+        end
         placed = true
       end
     end

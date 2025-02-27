@@ -11,18 +11,18 @@
     <div>
       <h3 class="text-center">Your Board</h3>
       
-      <div class="grid grid-cols-11 gap-1 bg-blue-500 p-2 max-w-fit mx-auto">
+      <div class="grid grid-cols-11 bg-blue-500 p-2 max-w-fit mx-auto">
         <div class="w-10 h-10"></div>
-        <% ('А'..'Й').each do |letter| %>
+        <% ('A'..'J').each do |letter| %>
           <div class="w-10 h-10 flex items-center text-white justify-center font-bold"><%= letter %></div>
         <% end %>
       </div>
 
-      <div id="player-board" class="grid grid-cols-11 gap-1 bg-blue-500 p-2 max-w-fit mx-auto">
+      <div id="player-board" class="grid grid-cols-11 gap-0 bg-blue-500 p-2 max-w-fit mx-auto">
         <% 10.times do |row| %>
           <div class="w-10 h-10 flex items-center justify-center text-white font-bold"><%= row + 1 %></div>
             <% 10.times do |col| %>
-              <div id="player-cell-<%= row %>-<%= col %>" class="w-10 h-10 border border-5 border-white rounded-lg flex items-center justify-center"></div>
+              <div id="player-cell-<%= row %>-<%= col %>" class="w-10 h-10 border border-5 border-white flex items-center justify-center"></div>
             <% end %>
         <% end %>
       </div>
@@ -31,14 +31,14 @@
 
     <div>
       <h3 class="text-center">Opponent's Board</h3>
-      <div class="grid grid-cols-11 gap-1 bg-blue-500 p-2 max-w-fit mx-auto">
+      <div class="grid grid-cols-11 bg-blue-500 p-2 max-w-fit mx-auto">
         <div class="w-10 h-10"></div>
-        <% ('А'..'Й').each do |letter| %>
+        <% ('A'..'J').each do |letter| %>
           <div class="w-10 h-10 flex items-center text-white justify-center font-bold"><%= letter %></div>
         <% end %>
       </div>
 
-      <div id="opponent-board" class="grid grid-cols-11 gap-1 bg-blue-500 p-2 max-w-fit mx-auto">
+      <div id="opponent-board" class="grid grid-cols-11 gap-0 bg-blue-500 p-2 max-w-fit mx-auto">
         <% 10.times do |row| %>
           <div class="w-10 h-10 flex items-center justify-center text-white font-bold"><%= row + 1 %></div>
           <% 10.times do |col| %>
@@ -46,7 +46,7 @@
                  data-action="click->game#fire"
                  data-x="<%= col %>"
                  data-y="<%= row %>"
-                 class="w-10 h-10 border border-5 border-white rounded-lg flex items-center justify-center"></div>
+                 class="w-10 h-10 border border-5 border-white flex items-center justify-center"></div>
           <% end %>
         <% end %>
       </div>

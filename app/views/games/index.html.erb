@@ -1,5 +1,5 @@
-<div class="flex flex-col items-center justify-center min-h-screen">
-  <h1 class="text-3xl font-bold mb-4">Your Game Logo Here</h1>
+<div class="flex flex-col items-center justify-center min-h-screen transform -translate-y-16">
+  <%= image_tag "logo.png", alt: "Game Logo", class: "mb-4" %>
   <%= form_with url: games_path, method: :post do %>
     <%= submit_tag "Create New Game", class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" %>
   <% end %>
