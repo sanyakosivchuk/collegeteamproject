@@ -35,6 +35,10 @@ export default class extends Controller {
       } else {
         this.displayMessage(data.message, "green");
         this.updateBoard(data.game);
+        if (data.game.status.startsWith("finished")) {
+          this.showGameOverButtons(data.game.status);
+          clearInterval(this.pollInterval);
+        }
       }
     })
     .catch(error => {
@@ -50,6 +54,10 @@ export default class extends Controller {
     .then(response => response.json())
     .then(game => {
       this.updateBoard(game);
+      if (game.status.startsWith("finished")) {
+        this.showGameOverButtons(game.status);
+        clearInterval(this.pollInterval);
+      }
     })
     .catch(error => console.error("Polling error:", error));
   }
@@ -63,59 +71,125 @@ export default class extends Controller {
   }
   
   updateBoard(game) {
-    // Determine which board belongs to the current player.
-    // For Player 1: ownBoard is game.player1_board, opponentBoard is game.player2_board.
-    // For Player 2: ownBoard is game.player2_board, opponentBoard is game.player1_board.
     const ownBoard = (this.playerValue === 1) ? game.player1_board : game.player2_board;
     const opponentBoard = (this.playerValue === 1) ? game.player2_board : game.player1_board;
+  
+  for (let row = 0; row < 10; row++) {
+    for (let col = 0; col < 10; col++) {
+      const cellValue = ownBoard[row][col];
+      const cellDiv = document.getElementById(`player-cell-${row}-${col}`);
 
-    // Update your own board (revealing ships, hits, and misses).
-    for (let row = 0; row < ownBoard.length; row++) {
-      for (let col = 0; col < ownBoard[row].length; col++) {
-        const cellValue = ownBoard[row][col];
-        const cellDiv = document.getElementById(`player-cell-${row}-${col}`);
-        let newClass = "w-10 h-10 border flex items-center justify-center ";
-        if (cellValue === "ship") {
-          newClass += "bg-yellow-300";
-          cellDiv.textContent = "S";
-        } else if (cellValue === "hit") {
-          newClass += "bg-red-500";
-          cellDiv.textContent = "X";
-        } else if (cellValue === "miss") {
-          newClass += "bg-gray-500";
-          cellDiv.textContent = "O";
-        } else {
-          newClass += "bg-blue-500";
-          cellDiv.textContent = "";
+      let newClass = "w-10 h-10 flex items-center justify-center ";
+      let borderClasses = "border border-white ";
+      let bgClass = "bg-blue-500 ";
+      let textContent = "";
+
+      if (typeof cellValue === "string" && cellValue.startsWith("ship_")) {
+        const length = parseInt(cellValue.split("_")[1], 10);
+
+        switch (length) {
+          case 1:
+            bgClass = "bg-green-300 ";
+            break;
+          case 2:
+            bgClass = "bg-yellow-300 ";
+            break;
+          case 3:
+            bgClass = "bg-orange-300 ";
+            break;
+          case 4:
+            bgClass = "bg-purple-300 ";
+            break;
+          default:
+            bgClass = "bg-blue-300 ";
         }
-        cellDiv.className = newClass;
+
+        textContent = "S";
+
+        if (col > 0 && ownBoard[row][col - 1].startsWith("ship_")) {
+          borderClasses += "border-l-0 ";
+        }
+        if (col < 9 && ownBoard[row][col + 1].startsWith("ship_")) {
+          borderClasses += "border-r-0 ";
+        }
+        if (row > 0 && ownBoard[row - 1][col].startsWith("ship_")) {
+          borderClasses += "border-t-0 ";
+        }
+        if (row < 9 && ownBoard[row + 1][col].startsWith("ship_")) {
+          borderClasses += "border-b-0 ";
+        }
       }
+      else if (cellValue === "hit") {
+        bgClass = "bg-red-500 ";
+        textContent = "X";
+      }
+      else if (cellValue === "miss") {
+        bgClass = "bg-gray-500 ";
+        textContent = "O";
+      }
+
+      cellDiv.className = newClass + borderClasses + bgClass;
+      cellDiv.textContent = textContent;
+    }
     }
 
-    // Update the opponent's board (only show hit or miss; do not reveal ships).
-    for (let row = 0; row < opponentBoard.length; row++) {
-      for (let col = 0; col < opponentBoard[row].length; col++) {
+    for (let row = 0; row < 10; row++) {
+      for (let col = 0; col < 10; col++) {
         const cellValue = opponentBoard[row][col];
         const cellDiv = document.getElementById(`opponent-cell-${row}-${col}`);
-        let newClass = "w-10 h-10 border flex items-center justify-center cursor-pointer ";
+  
+        let newClass = "w-10 h-10 flex items-center justify-center cursor-pointer ";
+        let borderClasses = "border border-white ";
+        let bgClass = "bg-blue-500 ";
+        let textContent = "";
+  
         if (cellValue === "hit") {
-          newClass += "bg-red-500";
-          cellDiv.textContent = "X";
-        } else if (cellValue === "miss") {
-          newClass += "bg-gray-500";
-          cellDiv.textContent = "O";
-        } else {
-          newClass += "bg-blue-500 hover:bg-blue-400";
-          cellDiv.textContent = "";
+          bgClass = "bg-red-500 ";
+          textContent = "X";
         }
-        cellDiv.className = newClass;
+        else if (cellValue === "miss") {
+          bgClass = "bg-gray-500 ";
+          textContent = "O";
+        }
+        else {
+          bgClass += "hover:bg-blue-400 ";
+        }
+  
+        cellDiv.className = newClass + borderClasses + bgClass;
+        cellDiv.textContent = textContent;
       }
     }
-
-    // Update turn information.
+  
     const turnInfo = document.getElementById("turn-info");
     if (turnInfo) {
       turnInfo.textContent = `Current turn: Player ${game.current_turn}`;
     }
+  }
+  
+  showGameOverButtons(status) {
+    const container = document.createElement("div");
+    container.className = "flex flex-col items-center gap-4 mt-4";
+
+    const winnerText = document.createElement("h2");
+    winnerText.className = "text-xl font-bold text-center";
+    if (status.includes("player1_won")) {
+      winnerText.textContent = "Game ended! Player 1 won!";
+    } else if (status.includes("player2_won")) {
+      winnerText.textContent = "Game ended! Player 2 won!";
+    }
+
+    const buttonContainer = document.createElement("div");
+    buttonContainer.className = "flex gap-4";
+
+    const homeButton = document.createElement("a");
+    homeButton.href = "/";
+    homeButton.innerText = "Main menu";
+    homeButton.className = "bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600";
+
+    buttonContainer.appendChild(homeButton);
+    container.appendChild(winnerText);
+    container.appendChild(buttonContainer);
+
+    document.getElementById("message").appendChild(container);
   }
 }

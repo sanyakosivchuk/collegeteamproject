@@ -71,12 +71,15 @@ class GamesController < ApplicationController
       render json: { error: "You already fired at that cell." }, status: :unprocessable_entity and return
     end
 
-    if cell == "ship"
+    game_over = false
+
+    if cell.to_s.start_with?("ship_")
       board[y][x] = "hit"
       # Only declare victory if there are no remaining ship cells.
-      if board.flatten.none? { |c| c == "ship" }
+      if board.flatten.none? { |c| c.to_s.start_with?("ship_") }
         @game.status = "finished_player#{player}_won"
         message = "Hit! You sunk all opponent's ships. Player #{player} wins!"
+        game_over = true
       else
         message = "Hit!"
         # In many Battleship rules a hit lets you fire again.
@@ -97,7 +100,7 @@ class GamesController < ApplicationController
 
     @game.save!
 
-    render json: { message: message, game: @game.slice("player1_board", "player2_board", "current_turn", "status") }
+    render json: { message: message, game: @game.slice("player1_board", "player2_board", "current_turn", "status"), game_over: game_over }
   end
 
   # GET /games/:uuid/state
@@ -145,9 +148,10 @@ class GamesController < ApplicationController
         positions = (start_y...(start_y + size)).map { |y| [ y, start_x ] }
       end
 
-      # Check that every chosen cell is empty.
       if positions.all? { |row, col| board[row][col] == "empty" }
-        positions.each { |row, col| board[row][col] = "ship" }
+        positions.each do |row, col|
+          board[row][col] = "ship_#{size}"
+        end
         placed = true
       end
     end
