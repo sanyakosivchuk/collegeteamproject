@@ -1,6 +1,6 @@
 class GamesController < ApplicationController
   skip_before_action :verify_authenticity_token
-  before_action :set_game, only: [:show, :move, :state, :place_ship, :finalize_placement]
+  before_action :set_game, only: [ :show, :move, :state, :place_ship, :finalize_placement ]
 
   # GET / (homepage)
   def index
@@ -52,9 +52,9 @@ class GamesController < ApplicationController
     orientation = params[:orientation] # "horizontal" or "vertical"
 
     positions = if orientation == "horizontal"
-      (start_x...(start_x + size)).map { |x| [start_y, x] }
+      (start_x...(start_x + size)).map { |x| [ start_y, x ] }
     else
-      (start_y...(start_y + size)).map { |y| [y, start_x] }
+      (start_y...(start_y + size)).map { |y| [ y, start_x ] }
     end
 
     # Validate boundaries.
@@ -200,15 +200,15 @@ class GamesController < ApplicationController
     attempts = 0
     while !placed && attempts < 100
       attempts += 1
-      horizontal = [true, false].sample
+      horizontal = [ true, false ].sample
       if horizontal
         start_x = rand(0..(10 - size))
         start_y = rand(0..9)
-        positions = (start_x...(start_x + size)).map { |x| [start_y, x] }
+        positions = (start_x...(start_x + size)).map { |x| [ start_y, x ] }
       else
         start_y = rand(0..(10 - size))
         start_x = rand(0..9)
-        positions = (start_y...(start_y + size)).map { |y| [y, start_x] }
+        positions = (start_y...(start_y + size)).map { |y| [ y, start_x ] }
       end
 
       if positions.all? { |row, col| board[row][col] == "empty" }
