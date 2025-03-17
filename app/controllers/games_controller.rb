@@ -85,10 +85,10 @@ class GamesController < ApplicationController
     if @game.status != "setup"
       render json: { error: "Ship placement already finalized." }, status: :unprocessable_entity and return
     end
-
+  
     board = role == 1 ? @game.player1_board : @game.player2_board
-
-    # For each ship type, auto-place any missing ships.
+  
+    # For each ship type, auto-place any missing ships on this player's board.
     ships_to_place.each do |size, count|
       placed_count = board.flatten.count { |cell| cell == "ship_#{size}" } / size
       missing_count = count - placed_count
@@ -99,8 +99,8 @@ class GamesController < ApplicationController
         end
       end
     end
-
-    # Mark player's placement as done.
+  
+    # Save current player's board and mark placement as done.
     if role == 1
       @game.player1_board = board
       @game.player1_placement_done = true
@@ -108,15 +108,27 @@ class GamesController < ApplicationController
       @game.player2_board = board
       @game.player2_placement_done = true
     end
-
+  
+    # If the placement deadline has passed OR if one player finalized, auto-finalize the other board.
+    if Time.current > @game.placement_deadline || params[:force] == "true"
+      if !@game.player1_placement_done
+        @game.player1_board = auto_finalize_board(@game.player1_board)
+        @game.player1_placement_done = true
+      end
+      if !@game.player2_placement_done
+        @game.player2_board = auto_finalize_board(@game.player2_board)
+        @game.player2_placement_done = true
+      end
+    end
+  
     @game.save!
-
-    # If both players are done, start the game.
+  
+    # When both boards are finalized, change game status to ongoing.
     if @game.player1_placement_done && @game.player2_placement_done
       @game.update!(status: "ongoing")
     end
-
-    render json: { board: board, message: "Ship placement finalized." }
+  
+    render json: { board: board, message: "Ship placement finalized.", status: @game.status }
   end
 
   # POST /games/:uuid/move
@@ -217,5 +229,16 @@ class GamesController < ApplicationController
       end
     end
     placed
+  end
+
+  def auto_finalize_board(board)
+    ships_to_place.each do |size, count|
+      placed_count = board.flatten.count { |cell| cell == "ship_#{size}" } / size
+      missing_count = count - placed_count
+      missing_count.times do
+        success = place_ship_randomly(board, size)
+      end
+    end
+    board
   end
 end

@@ -46,7 +46,13 @@ export default class extends Controller {
       .then(response => response.json())
       .then(data => {
         console.log("Finalized ship placement:", data);
-        window.location.reload();
+        if(data.status === "ongoing") {
+          // Redirect or reload page so the gameplay view shows up.
+          window.location.reload();
+        } else {
+          // Optionally show a message that you're waiting for the opponent.
+          alert("Waiting for the opponent to finish ship placement...");
+        }
       })
       .catch(error => console.error("Error finalizing placement:", error));
   }
