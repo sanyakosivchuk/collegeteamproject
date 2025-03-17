@@ -85,9 +85,9 @@ class GamesController < ApplicationController
     if @game.status != "setup"
       render json: { error: "Ship placement already finalized." }, status: :unprocessable_entity and return
     end
-  
+
     board = role == 1 ? @game.player1_board : @game.player2_board
-  
+
     # For each ship type, auto-place any missing ships on this player's board.
     ships_to_place.each do |size, count|
       placed_count = board.flatten.count { |cell| cell == "ship_#{size}" } / size
@@ -99,7 +99,7 @@ class GamesController < ApplicationController
         end
       end
     end
-  
+
     # Save current player's board and mark placement as done.
     if role == 1
       @game.player1_board = board
@@ -108,7 +108,7 @@ class GamesController < ApplicationController
       @game.player2_board = board
       @game.player2_placement_done = true
     end
-  
+
     # If the placement deadline has passed OR if one player finalized, auto-finalize the other board.
     if Time.current > @game.placement_deadline || params[:force] == "true"
       if !@game.player1_placement_done
@@ -120,14 +120,14 @@ class GamesController < ApplicationController
         @game.player2_placement_done = true
       end
     end
-  
+
     @game.save!
-  
+
     # When both boards are finalized, change game status to ongoing.
     if @game.player1_placement_done && @game.player2_placement_done
       @game.update!(status: "ongoing")
     end
-  
+
     render json: { board: board, message: "Ship placement finalized.", status: @game.status }
   end
 
