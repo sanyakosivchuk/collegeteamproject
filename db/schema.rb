@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_10_102720) do
+ActiveRecord::Schema[8.0].define(version: 2025_03_17_102120) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -24,6 +24,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_10_102720) do
     t.datetime "updated_at", null: false
     t.string "player1_session"
     t.string "player2_session"
+    t.datetime "placement_deadline"
+    t.boolean "player1_placement_done", default: false
+    t.boolean "player2_placement_done", default: false
     t.index ["uuid"], name: "index_games_on_uuid", unique: true
   end
 end

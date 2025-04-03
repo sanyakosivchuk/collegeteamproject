@@ -1,55 +1,112 @@
-<div data-controller="game"
-     data-game-uuid-value="<%= @game.uuid %>"
-     data-game-player-value="<%= session["game_#{@game.uuid}_player_role"] %>" class="">
-  <h2 class="text-center text-xl font-bold">You are Player <%= session["game_#{@game.uuid}_player_role"] %></h2>
-  
-  <div id="turn-info" class="mb-2 text-center text-xl font-bold"></div>
-  <div id="message" class="mb-2 text-center text-xl font-bold"></div>
-  <div id="game-over-buttons" class="text-center mt-4"></div>
-
-  <div class="flex flex-col lg:flex-row gap-16 lg:gap-52 pb-16 lg:pb-0">
-    <div>
-      <h3 class="text-center">Your Board</h3>
-      
-      <div class="grid grid-cols-11 bg-blue-500 p-2 max-w-fit mx-auto">
-        <div class="w-10 h-10"></div>
-        <% ('A'..'J').each do |letter| %>
-          <div class="w-10 h-10 flex items-center text-white justify-center font-bold"><%= letter %></div>
+<%# app/views/games/show.html.erb %>
+<% if @game.status == "setup" %>
+  <div data-controller="placement"
+       data-placement-uuid-value="<%= @game.uuid %>"
+       data-placement-player-value="<%= session["game_#{@game.uuid}_player_role"] %>"
+       data-placement-time-limit-value="60">
+    <!-- Timer -->
+    <div id="placement-timer" class="text-center font-bold mb-4"></div>
+    
+    <h2 class="text-center text-xl font-bold">
+      Place your ships, Player <%= session["game_#{@game.uuid}_player_role"] %>
+    </h2>
+    
+    <!-- Ship Palette (drag items) -->
+    <div id="ship-palette" class="flex justify-center mb-4"></div>
+    
+    <!-- Interactive Board for Ship Placement -->
+    <div id="player-board" class="grid grid-cols-11 gap-0 bg-blue-500 p-2 max-w-fit mx-auto">
+      <% 10.times do |row| %>
+        <div class="w-10 h-10 flex items-center justify-center text-white font-bold">
+          <%= row + 1 %>
+        </div>
+        <% 10.times do |col| %>
+          <div id="player-cell-<%= row %>-<%= col %>"
+               data-x="<%= col %>"
+               data-y="<%= row %>"
+               data-action="dragover->placement#allowDrop dragleave->placement#dragLeave drop->placement#dropShip"
+               class="w-10 h-10 border border-white flex items-center justify-center">
+          </div>
         <% end %>
-      </div>
-
-      <div id="player-board" class="grid grid-cols-11 gap-0 bg-blue-500 p-2 max-w-fit mx-auto">
-        <% 10.times do |row| %>
-          <div class="w-10 h-10 flex items-center justify-center text-white font-bold"><%= row + 1 %></div>
-            <% 10.times do |col| %>
-              <div id="player-cell-<%= row %>-<%= col %>" class="w-10 h-10 border border-5 border-white flex items-center justify-center"></div>
-            <% end %>
-        <% end %>
-      </div>
+      <% end %>
     </div>
-
-
-    <div>
-      <h3 class="text-center">Opponent's Board</h3>
-      <div class="grid grid-cols-11 bg-blue-500 p-2 max-w-fit mx-auto">
-        <div class="w-10 h-10"></div>
-        <% ('A'..'J').each do |letter| %>
-          <div class="w-10 h-10 flex items-center text-white justify-center font-bold"><%= letter %></div>
-        <% end %>
-      </div>
-
-      <div id="opponent-board" class="grid grid-cols-11 gap-0 bg-blue-500 p-2 max-w-fit mx-auto">
-        <% 10.times do |row| %>
-          <div class="w-10 h-10 flex items-center justify-center text-white font-bold"><%= row + 1 %></div>
-          <% 10.times do |col| %>
-            <div id="opponent-cell-<%= row %>-<%= col %>"
-                 data-action="click->game#fire"
-                 data-x="<%= col %>"
-                 data-y="<%= row %>"
-                 class="w-10 h-10 border border-5 border-white flex items-center justify-center"></div>
+    
+    <!-- Finalize Button -->
+    <div class="text-center mt-4">
+      <button data-action="click->placement#finalizePlacement"
+              class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+        I'm Done
+      </button>
+    </div>
+  </div>
+<% else %>
+  <div data-controller="game"
+       data-game-uuid-value="<%= @game.uuid %>"
+       data-game-player-value="<%= session["game_#{@game.uuid}_player_role"] %>">
+    <h2 class="text-center text-xl font-bold">
+      You are Player <%= session["game_#{@game.uuid}_player_role"] %>
+    </h2>
+    
+    <div id="turn-info" class="mb-2 text-center text-xl font-bold"></div>
+    <div id="message" class="mb-2 text-center text-xl font-bold"></div>
+    <div id="game-over-buttons" class="text-center mt-4"></div>
+  
+    <div class="flex flex-col lg:flex-row gap-16 lg:gap-52 pb-16 lg:pb-0">
+      <!-- Your Board -->
+      <div>
+        <h3 class="text-center">Your Board</h3>
+        
+        <div class="grid grid-cols-11 bg-blue-500 p-2 max-w-fit mx-auto">
+          <div class="w-10 h-10"></div>
+          <% ('A'..'J').each do |letter| %>
+            <div class="w-10 h-10 flex items-center text-white justify-center font-bold">
+              <%= letter %>
+            </div>
           <% end %>
-        <% end %>
+        </div>
+  
+        <div id="player-board" class="grid grid-cols-11 gap-0 bg-blue-500 p-2 max-w-fit mx-auto">
+          <% 10.times do |row| %>
+            <div class="w-10 h-10 flex items-center justify-center text-white font-bold">
+              <%= row + 1 %>
+            </div>
+            <% 10.times do |col| %>
+              <div id="player-cell-<%= row %>-<%= col %>" 
+                   class="w-10 h-10 border border-5 border-white flex items-center justify-center">
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+  
+      <!-- Opponent's Board -->
+      <div>
+        <h3 class="text-center">Opponent's Board</h3>
+        <div class="grid grid-cols-11 bg-blue-500 p-2 max-w-fit mx-auto">
+          <div class="w-10 h-10"></div>
+          <% ('A'..'J').each do |letter| %>
+            <div class="w-10 h-10 flex items-center text-white justify-center font-bold">
+              <%= letter %>
+            </div>
+          <% end %>
+        </div>
+  
+        <div id="opponent-board" class="grid grid-cols-11 gap-0 bg-blue-500 p-2 max-w-fit mx-auto">
+          <% 10.times do |row| %>
+            <div class="w-10 h-10 flex items-center justify-center text-white font-bold">
+              <%= row + 1 %>
+            </div>
+            <% 10.times do |col| %>
+              <div id="opponent-cell-<%= row %>-<%= col %>"
+                   data-action="click->game#fire"
+                   data-x="<%= col %>"
+                   data-y="<%= row %>"
+                   class="w-10 h-10 border border-5 border-white flex items-center justify-center">
+              </div>
+            <% end %>
+          <% end %>
+        </div>
       </div>
     </div>
   </div>
-</div>
+<% end %>
