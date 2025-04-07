@@ -1,7 +1,15 @@
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-  static values = { uuid: String, player: Number }
+  static values = {
+    uuid: String,
+    player: Number,
+    ship1Url: String,
+    ship2Url: String,
+    ship3Url: String,
+    ship4Url: String
+  }
+  
   
   connect() {
     console.log("Game controller connected.");
@@ -74,63 +82,77 @@ export default class extends Controller {
     const ownBoard = (this.playerValue === 1) ? game.player1_board : game.player2_board;
     const opponentBoard = (this.playerValue === 1) ? game.player2_board : game.player1_board;
   
-  for (let row = 0; row < 10; row++) {
-    for (let col = 0; col < 10; col++) {
-      const cellValue = ownBoard[row][col];
-      const cellDiv = document.getElementById(`player-cell-${row}-${col}`);
+    for (let row = 0; row < 10; row++) {
+      for (let col = 0; col < 10; col++) {
+        const cellValue = ownBoard[row][col];
+        const cellDiv = document.getElementById(`player-cell-${row}-${col}`);
+  
+        let newClass = "w-10 h-10 flex items-center justify-center ";
+        let borderClasses = "border border-white ";
+        let bgClass = "bg-blue-500 ";
+        let textContent = "";
+        let originalShipValue = null;
+  
+        if (typeof cellValue === "string" && cellValue.startsWith("ship_") ||
+            typeof cellValue === "string" && cellValue === "hit" && this.wasShipBefore(game, row, col)) {
+          const length = parseInt(cellValue.split("_")[1], 10);
+          const shipImageUrl = this[`ship${length}UrlValue`];
+          const isHorizontal = (col < 9 && ownBoard[row][col + 1]?.startsWith("ship_")) ||
+                               (col > 0 && ownBoard[row][col - 1]?.startsWith("ship_"));
+  
+          let indexInShip = 0;
 
-      let newClass = "w-10 h-10 flex items-center justify-center ";
-      let borderClasses = "border border-white ";
-      let bgClass = "bg-blue-500 ";
-      let textContent = "";
-
-      if (typeof cellValue === "string" && cellValue.startsWith("ship_")) {
-        const length = parseInt(cellValue.split("_")[1], 10);
-
-        switch (length) {
-          case 1:
-            bgClass = "bg-green-300 ";
-            break;
-          case 2:
-            bgClass = "bg-yellow-300 ";
-            break;
-          case 3:
-            bgClass = "bg-orange-300 ";
-            break;
-          case 4:
-            bgClass = "bg-purple-300 ";
-            break;
-          default:
-            bgClass = "bg-blue-300 ";
-        }
-
-        textContent = "S";
-
-        if (col > 0 && ownBoard[row][col - 1].startsWith("ship_")) {
-          borderClasses += "border-l-0 ";
-        }
-        if (col < 9 && ownBoard[row][col + 1].startsWith("ship_")) {
-          borderClasses += "border-r-0 ";
-        }
-        if (row > 0 && ownBoard[row - 1][col].startsWith("ship_")) {
-          borderClasses += "border-t-0 ";
-        }
-        if (row < 9 && ownBoard[row + 1][col].startsWith("ship_")) {
-          borderClasses += "border-b-0 ";
+          if (isHorizontal) {
+            let i = col;
+            while (i > 0 && ownBoard[row][i - 1]?.startsWith("ship_")) {
+              indexInShip++;
+              i--;
+            }
+          } else {
+            let i = row;
+            while (i > 0 && ownBoard[i - 1][col]?.startsWith("ship_")) {
+              indexInShip++;
+              i--;
+            }
+          }
+                               
+  
+          if (col > 0 && ownBoard[row][col - 1]?.startsWith("ship_")) borderClasses += "border-l-0 ";
+          if (col < 9 && ownBoard[row][col + 1]?.startsWith("ship_")) borderClasses += "border-r-0 ";
+          if (row > 0 && ownBoard[row - 1][col]?.startsWith("ship_")) borderClasses += "border-t-0 ";
+          if (row < 9 && ownBoard[row + 1][col]?.startsWith("ship_")) borderClasses += "border-b-0 ";
+  
+          cellDiv.className = newClass + borderClasses;
+          cellDiv.style.backgroundImage = `url('${shipImageUrl}')`;
+          cellDiv.style.backgroundRepeat = "no-repeat";
+          cellDiv.style.backgroundColor = "transparent";
+  
+          if (isHorizontal) {
+            cellDiv.style.backgroundSize = `${length * 40}px 40px`;
+            cellDiv.style.backgroundPosition = `-${indexInShip * 40}px 0`;
+          } else {
+            cellDiv.style.backgroundSize = `40px ${length * 40}px`;
+            cellDiv.style.backgroundPosition = `0 -${indexInShip * 40}px`;
+          }
+  
+          if (cellValue === "hit") {
+            cellDiv.classList.add("relative", "cell-hit");
+          }
+        } 
+        else if (cellValue === "hit") {
+          cellDiv.classList.add("relative", "cell-hit");
+        } 
+        else if (cellValue === "miss") {
+          bgClass = "bg-gray-500 ";
+          textContent = "O";
+          cellDiv.className = newClass + borderClasses + bgClass;
+          cellDiv.textContent = textContent;
+        } 
+        else {
+          cellDiv.className = newClass + borderClasses + bgClass;
+          cellDiv.textContent = textContent;
         }
       }
-      else if (cellValue === "hit") {
-        bgClass = "bg-red-500 ";
-        textContent = "X";
-      }
-      else if (cellValue === "miss") {
-        bgClass = "bg-gray-500 ";
-        textContent = "O";
-      }
-
-      cellDiv.className = newClass + borderClasses + bgClass;
-      cellDiv.textContent = textContent;
-    }
     }
 
     for (let row = 0; row < 10; row++) {
@@ -191,5 +213,11 @@ export default class extends Controller {
     container.appendChild(buttonContainer);
 
     document.getElementById("message").appendChild(container);
+  }
+
+  wasShipBefore(game, row, col) {
+    const originalBoard = this.playerValue === 1 ? game.original_player1_board : game.original_player2_board;
+    const value = originalBoard?.[row]?.[col];
+    return typeof value === "string" && value.startsWith("ship_");
   }
 }
