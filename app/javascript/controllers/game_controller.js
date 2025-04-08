@@ -91,7 +91,6 @@ export default class extends Controller {
         let borderClasses = "border border-white ";
         let bgClass = "bg-blue-500 ";
         let textContent = "";
-        let originalShipValue = null;
   
         if (typeof cellValue === "string" && cellValue.startsWith("ship_") ||
             typeof cellValue === "string" && cellValue === "hit" && this.wasShipBefore(game, row, col)) {
@@ -116,24 +115,53 @@ export default class extends Controller {
             }
           }
                                
+          const currentValue = ownBoard[row][col];
+
+          if (length > 1) {
+            const isSameShip = (val) => {
+              return (
+                val &&
+                typeof val === "string" &&
+                val.startsWith("ship_") &&
+                val === currentValue
+              );
+            };
+          
+            if (col > 0 && isSameShip(ownBoard[row][col - 1])) borderClasses += "border-l-0 ";
+            if (col < 9 && isSameShip(ownBoard[row][col + 1])) borderClasses += "border-r-0 ";
+            if (row > 0 && isSameShip(ownBoard[row - 1][col])) borderClasses += "border-t-0 ";
+            if (row < 9 && isSameShip(ownBoard[row + 1][col])) borderClasses += "border-b-0 ";
+          }
   
-          if (col > 0 && ownBoard[row][col - 1]?.startsWith("ship_")) borderClasses += "border-l-0 ";
-          if (col < 9 && ownBoard[row][col + 1]?.startsWith("ship_")) borderClasses += "border-r-0 ";
-          if (row > 0 && ownBoard[row - 1][col]?.startsWith("ship_")) borderClasses += "border-t-0 ";
-          if (row < 9 && ownBoard[row + 1][col]?.startsWith("ship_")) borderClasses += "border-b-0 ";
-  
-          cellDiv.className = newClass + borderClasses;
+          cellDiv.className = newClass + borderClasses + " relative z-10";
+          cellDiv.style.opacity = "1";
           cellDiv.style.backgroundImage = `url('${shipImageUrl}')`;
           cellDiv.style.backgroundRepeat = "no-repeat";
           cellDiv.style.backgroundColor = "transparent";
+
   
-          if (isHorizontal) {
-            cellDiv.style.backgroundSize = `${length * 40}px 40px`;
-            cellDiv.style.backgroundPosition = `-${indexInShip * 40}px 0`;
+          if (length === 1) {
+            // Одинарний корабель — просто повне зображення
+            cellDiv.style.backgroundImage = `url('${shipImageUrl}')`;
+            cellDiv.style.backgroundRepeat = "no-repeat";
+            cellDiv.style.backgroundSize = "cover";
+            cellDiv.style.backgroundPosition = "center";
           } else {
-            cellDiv.style.backgroundSize = `40px ${length * 40}px`;
-            cellDiv.style.backgroundPosition = `0 -${indexInShip * 40}px`;
+            // Багатоклітинковий корабель (2+)
+            cellDiv.style.backgroundImage = `url('${shipImageUrl}')`;
+            cellDiv.style.backgroundRepeat = "no-repeat";
+            cellDiv.style.backgroundColor = "transparent";
+          
+            if (isHorizontal) {
+              cellDiv.style.backgroundSize = `${length * 40}px 40px`;
+              cellDiv.style.backgroundPosition = `-${indexInShip * 40}px 0`;
+            } else {
+              cellDiv.style.backgroundSize = `40px ${length * 40}px`;
+              cellDiv.style.backgroundPosition = `0 -${indexInShip * 40}px`;
+            }
           }
+          
+  
   
           if (cellValue === "hit") {
             cellDiv.classList.add("relative", "cell-hit");
