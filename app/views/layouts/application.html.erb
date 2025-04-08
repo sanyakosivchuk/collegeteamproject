@@ -23,7 +23,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body class="bg-cover bg-center" style="background-image: url('<%= asset_path('background.png') %>');">
     <main class="flex items-center justify-center min-h-screen">
       <%= yield %>
     </main>
