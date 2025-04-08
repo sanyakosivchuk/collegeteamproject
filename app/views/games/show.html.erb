@@ -3,11 +3,15 @@
   <div data-controller="placement"
        data-placement-uuid-value="<%= @game.uuid %>"
        data-placement-player-value="<%= session["game_#{@game.uuid}_player_role"] %>"
-       data-placement-time-limit-value="60"
-       data-placement-ship-1url-value="<%= asset_path("ship_1.png") %>"
-       data-placement-ship-2url-value="<%= asset_path("ship_2.png") %>"
-       data-placement-ship-3url-value="<%= asset_path("ship_3.png") %>"
-       data-placement-ship-4url-value="<%= asset_path("ship_4.png") %>">
+       data-placement-time-limit-value="999"
+       data-placement-ship1-url-value="<%= asset_path("ship_1.png") %>"
+       data-placement-ship1-vertical-url-value="<%= asset_path("ship_1ver.png") %>"
+       data-placement-ship2-url-value="<%= asset_path("ship_2.png") %>"
+       data-placement-ship2-vertical-url-value="<%= asset_path("ship_2ver.png") %>"
+       data-placement-ship3-url-value="<%= asset_path("ship_3.png") %>"
+       data-placement-ship3-vertical-url-value="<%= asset_path("ship_3ver.png") %>"
+       data-placement-ship4-url-value="<%= asset_path("ship_4.png") %>"
+       data-placement-ship4-vertical-url-value="<%= asset_path("ship_4ver.png") %>">
     <!-- Timer -->
     <div id="placement-timer" class="text-center font-bold mb-4"></div>
     
@@ -48,9 +52,13 @@
        data-game-uuid-value="<%= @game.uuid %>"
        data-game-player-value="<%= session["game_#{@game.uuid}_player_role"] %>"
        data-game-ship1-url-value="<%= asset_path("ship_1.png") %>"
+       data-game-ship1-vertical-url-value="<%= asset_path("ship_1ver.png") %>"
        data-game-ship2-url-value="<%= asset_path("ship_2.png") %>"
+       data-game-ship2-vertical-url-value="<%= asset_path("ship_2ver.png") %>"
        data-game-ship3-url-value="<%= asset_path("ship_3.png") %>"
-       data-game-ship4-url-value="<%= asset_path("ship_4.png") %>">
+       data-game-ship3-vertical-url-value="<%= asset_path("ship_3ver.png") %>"
+       data-game-ship4-url-value="<%= asset_path("ship_4.png") %>"
+       data-game-ship4-vertical-url-value="<%= asset_path("ship_4ver.png") %>">
     <h2 class="text-center text-xl font-bold">
       You are Player <%= session["game_#{@game.uuid}_player_role"] %>
     </h2>

@@ -5,9 +5,13 @@ export default class extends Controller {
     uuid: String,
     player: Number,
     ship1Url: String,
+    ship1VerticalUrl: String,
     ship2Url: String,
+    ship2VerticalUrl: String,
     ship3Url: String,
-    ship4Url: String
+    ship3VerticalUrl: String,
+    ship4Url: String,
+    ship4VerticalUrl: String
   }
   
   
@@ -95,9 +99,11 @@ export default class extends Controller {
         if (typeof cellValue === "string" && cellValue.startsWith("ship_") ||
             typeof cellValue === "string" && cellValue === "hit" && this.wasShipBefore(game, row, col)) {
           const length = parseInt(cellValue.split("_")[1], 10);
-          const shipImageUrl = this[`ship${length}UrlValue`];
           const isHorizontal = (col < 9 && ownBoard[row][col + 1]?.startsWith("ship_")) ||
-                               (col > 0 && ownBoard[row][col - 1]?.startsWith("ship_"));
+                     (col > 0 && ownBoard[row][col - 1]?.startsWith("ship_"));
+          const shipImageUrl = isHorizontal
+            ? this[`ship${length}UrlValue`]
+            : this[`ship${length}VerticalUrlValue`];
   
           let indexInShip = 0;
 
