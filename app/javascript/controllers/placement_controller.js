@@ -1,7 +1,18 @@
 import { Controller } from "@hotwired/stimulus";
 
 export default class extends Controller {
-  static values = { uuid: String, player: Number, timeLimit: Number }
+  static values = 
+  { uuid: String,
+    player: Number,
+    timeLimit: Number,
+    ship1Url: String,
+    ship1VerticalUrl: String,
+    ship2Url: String,
+    ship2VerticalUrl: String,
+    ship3Url: String,
+    ship3VerticalUrl: String,
+    ship4Url: String,
+    ship4VerticalUrl: String }
 
   connect() {
     this.remainingTime = this.timeLimitValue;
@@ -191,20 +202,38 @@ export default class extends Controller {
 
   // Draw the ship on the board by updating the cells.
   drawShipOnBoard(startX, startY, size, orientation) {
-    if (orientation === "horizontal") {
-      for (let i = 0; i < size; i++) {
-        const cell = document.getElementById(`player-cell-${startY}-${startX + i}`);
-        if (cell) {
-          cell.textContent = "S";
-          cell.style.backgroundColor = "#38b2ac";
+    const shipUrlValueName = orientation === "horizontal"
+      ? `ship${size}UrlValue`
+      : `ship${size}VerticalUrlValue`;
+  
+    const shipImageUrl = this[shipUrlValueName];
+  
+    for (let i = 0; i < size; i++) {
+      const x = orientation === "horizontal" ? startX + i : startX;
+      const y = orientation === "horizontal" ? startY : startY + i;
+      const cell = document.getElementById(`player-cell-${y}-${x}`);
+      if (cell) {
+        cell.innerHTML = "";
+        cell.style.backgroundImage = `url('${shipImageUrl}')`;
+        cell.style.backgroundRepeat = "no-repeat";
+        cell.style.backgroundColor = "transparent";
+
+        if (size > 1) {
+          if (orientation === "horizontal") {
+            if (i > 0) cell.classList.add("border-l-0");
+            if (i < size - 1) cell.classList.add("border-r-0");
+          } else {
+            if (i > 0) cell.classList.add("border-t-0");
+            if (i < size - 1) cell.classList.add("border-b-0");
+          }
         }
-      }
-    } else {
-      for (let i = 0; i < size; i++) {
-        const cell = document.getElementById(`player-cell-${startY + i}-${startX}`);
-        if (cell) {
-          cell.textContent = "S";
-          cell.style.backgroundColor = "#38b2ac";
+  
+        if (orientation === "horizontal") {
+          cell.style.backgroundSize = `${size * 40}px 40px`;
+          cell.style.backgroundPosition = `-${i * 40}px 0`;
+        } else {
+          cell.style.backgroundSize = `40px ${size * 40}px`;
+          cell.style.backgroundPosition = `0 -${i * 40}px`;
         }
       }
     }
