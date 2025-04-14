@@ -96,84 +96,73 @@ export default class extends Controller {
         let bgClass = "bg-blue-500 ";
         let textContent = "";
   
-        if (typeof cellValue === "string" && cellValue.startsWith("ship_") ||
-            typeof cellValue === "string" && cellValue === "hit" && this.wasShipBefore(game, row, col)) {
-          const length = parseInt(cellValue.split("_")[1], 10);
-          const isHorizontal = (col < 9 && ownBoard[row][col + 1]?.startsWith("ship_")) ||
-                     (col > 0 && ownBoard[row][col - 1]?.startsWith("ship_"));
-          const shipImageUrl = isHorizontal
-            ? this[`ship${length}UrlValue`]
-            : this[`ship${length}VerticalUrlValue`];
-  
-          let indexInShip = 0;
+        if (typeof cellValue === "string" &&
+          (cellValue.startsWith("ship_") || cellValue.startsWith("hit_ship_"))) {
+        
+        const baseValue = cellValue.startsWith("hit_ship_")
+          ? cellValue.replace("hit_", "") // e.g. "hit_ship_3" => "ship_3"
+          : cellValue;
 
+        const length = parseInt(baseValue.split("_")[1], 10);
+        const isHorizontal = (col < 9 && ownBoard[row][col + 1]?.includes(baseValue)) ||
+                              (col > 0 && ownBoard[row][col - 1]?.includes(baseValue));
+
+        const shipImageUrl = isHorizontal
+          ? this[`ship${length}UrlValue`]
+          : this[`ship${length}VerticalUrlValue`];
+
+        let indexInShip = 0;
+        if (isHorizontal) {
+          let i = col;
+          while (i > 0 && ownBoard[row][i - 1]?.includes(baseValue)) {
+            indexInShip++;
+            i--;
+          }
+        } else {
+          let i = row;
+          while (i > 0 && ownBoard[i - 1][col]?.includes(baseValue)) {
+            indexInShip++;
+            i--;
+          }
+        }
+
+        const isSameShip = (val) =>
+          typeof val === "string" && val.includes(baseValue);
+
+        let borderClasses = "border border-white ";
+        if (length > 1) {
+          if (col > 0 && isSameShip(ownBoard[row][col - 1])) borderClasses += "border-l-0 ";
+          if (col < 9 && isSameShip(ownBoard[row][col + 1])) borderClasses += "border-r-0 ";
+          if (row > 0 && isSameShip(ownBoard[row - 1][col])) borderClasses += "border-t-0 ";
+          if (row < 9 && isSameShip(ownBoard[row + 1][col])) borderClasses += "border-b-0 ";
+        }
+
+        cellDiv.className = "w-10 h-10 flex items-center justify-center " + borderClasses + " relative z-10";
+        cellDiv.style.opacity = "1";
+        cellDiv.style.backgroundImage = `url('${shipImageUrl}')`;
+        cellDiv.style.backgroundRepeat = "no-repeat";
+        cellDiv.style.backgroundColor = "transparent";
+
+        if (length === 1) {
+          cellDiv.style.backgroundSize = "cover";
+          cellDiv.style.backgroundPosition = "center";
+        } else {
           if (isHorizontal) {
-            let i = col;
-            while (i > 0 && ownBoard[row][i - 1]?.startsWith("ship_")) {
-              indexInShip++;
-              i--;
-            }
+            cellDiv.style.backgroundSize = `${length * 40}px 40px`;
+            cellDiv.style.backgroundPosition = `-${indexInShip * 40}px 0`;
           } else {
-            let i = row;
-            while (i > 0 && ownBoard[i - 1][col]?.startsWith("ship_")) {
-              indexInShip++;
-              i--;
-            }
+            cellDiv.style.backgroundSize = `40px ${length * 40}px`;
+            cellDiv.style.backgroundPosition = `0 -${indexInShip * 40}px`;
           }
-                               
-          const currentValue = ownBoard[row][col];
+        }
 
-          if (length > 1) {
-            const isSameShip = (val) => {
-              return (
-                val &&
-                typeof val === "string" &&
-                val.startsWith("ship_") &&
-                val === currentValue
-              );
-            };
-          
-            if (col > 0 && isSameShip(ownBoard[row][col - 1])) borderClasses += "border-l-0 ";
-            if (col < 9 && isSameShip(ownBoard[row][col + 1])) borderClasses += "border-r-0 ";
-            if (row > 0 && isSameShip(ownBoard[row - 1][col])) borderClasses += "border-t-0 ";
-            if (row < 9 && isSameShip(ownBoard[row + 1][col])) borderClasses += "border-b-0 ";
-          }
-  
-          cellDiv.className = newClass + borderClasses + " relative z-10";
-          cellDiv.style.opacity = "1";
-          cellDiv.style.backgroundImage = `url('${shipImageUrl}')`;
-          cellDiv.style.backgroundRepeat = "no-repeat";
-          cellDiv.style.backgroundColor = "transparent";
+        // Add red X for hit
+        if (cellValue.startsWith("hit")) {
+          cellDiv.classList.add("relative", "cell-hit");
+        }
+      }
 
-  
-          if (length === 1) {
-            // Одинарний корабель — просто повне зображення
-            cellDiv.style.backgroundImage = `url('${shipImageUrl}')`;
-            cellDiv.style.backgroundRepeat = "no-repeat";
-            cellDiv.style.backgroundSize = "cover";
-            cellDiv.style.backgroundPosition = "center";
-          } else {
-            // Багатоклітинковий корабель (2+)
-            cellDiv.style.backgroundImage = `url('${shipImageUrl}')`;
-            cellDiv.style.backgroundRepeat = "no-repeat";
-            cellDiv.style.backgroundColor = "transparent";
-          
-            if (isHorizontal) {
-              cellDiv.style.backgroundSize = `${length * 40}px 40px`;
-              cellDiv.style.backgroundPosition = `-${indexInShip * 40}px 0`;
-            } else {
-              cellDiv.style.backgroundSize = `40px ${length * 40}px`;
-              cellDiv.style.backgroundPosition = `0 -${indexInShip * 40}px`;
-            }
-          }
-          
-  
-  
-          if (cellValue === "hit") {
-            cellDiv.classList.add("relative", "cell-hit");
-          }
-        } 
-        else if (cellValue === "hit") {
+        else if (cellValue.startsWith("hit")) {
           cellDiv.classList.add("relative", "cell-hit");
         } 
         else if (cellValue === "miss") {
@@ -199,7 +188,7 @@ export default class extends Controller {
         let bgClass = "bg-blue-500 ";
         let textContent = "";
   
-        if (cellValue === "hit") {
+        if (cellValue.startsWith("hit")) {
           bgClass = "bg-red-500 ";
           textContent = "X";
         }

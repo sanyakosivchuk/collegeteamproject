@@ -161,7 +161,7 @@ class GamesController < ApplicationController
 
     game_over = false
     if cell.to_s.start_with?("ship_")
-      board[y][x] = "hit"
+      board[y][x] = "hit_#{cell}"
       if board.flatten.none? { |c| c.to_s.start_with?("ship_") }
         @game.status = "finished_player#{player}_won"
         message = "Hit! You sunk all opponent's ships. Player #{player} wins!"
