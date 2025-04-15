@@ -18,7 +18,6 @@ export default class extends Controller {
   connect() {
     console.log("Game controller connected.");
     console.log("Game UUID:", this.uuidValue, "Player:", this.playerValue);
-    // Poll the game state every 3 seconds to update both boards.
     this.pollInterval = setInterval(() => this.pollGameState(), 3000);
   }
   
@@ -27,7 +26,6 @@ export default class extends Controller {
   }
   
   fire(event) {
-    // Get the board coordinates from the clicked cell.
     const x = event.currentTarget.dataset.x;
     const y = event.currentTarget.dataset.y;
     console.log(`Firing at cell (${x}, ${y})`);
@@ -100,7 +98,7 @@ export default class extends Controller {
           (cellValue.startsWith("ship_") || cellValue.startsWith("hit_ship_"))) {
         
         const baseValue = cellValue.startsWith("hit_ship_")
-          ? cellValue.replace("hit_", "") // e.g. "hit_ship_3" => "ship_3"
+          ? cellValue.replace("hit_", "")
           : cellValue;
 
         const length = parseInt(baseValue.split("_")[1], 10);
@@ -156,7 +154,6 @@ export default class extends Controller {
           }
         }
 
-        // Add red X for hit
         if (cellValue.startsWith("hit")) {
           cellDiv.classList.add("relative", "cell-hit");
         }

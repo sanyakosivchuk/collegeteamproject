@@ -2,12 +2,9 @@ class GamesController < ApplicationController
   skip_before_action :verify_authenticity_token
   before_action :set_game, only: [ :show, :move, :state, :place_ship, :finalize_placement ]
 
-  # GET / (homepage)
   def index
-    # Render a view with a “Create New Game” button.
   end
 
-  # POST /games
   def create
     placement_deadline = 60.seconds.from_now
     @game = Game.create!(
@@ -22,7 +19,6 @@ class GamesController < ApplicationController
     redirect_to game_path(@game)
   end
 
-  # GET /games/:uuid
   def show
     session_key = "game_#{@game.uuid}_player_role"
     unless session[session_key]
@@ -38,7 +34,6 @@ class GamesController < ApplicationController
     end
   end
 
-  # POST /games/:uuid/place_ship
   def place_ship
     role = session["game_#{@game.uuid}_player_role"]
     if @game.status != "setup"
@@ -49,7 +44,7 @@ class GamesController < ApplicationController
     start_x = params[:x].to_i
     start_y = params[:y].to_i
     size = params[:size].to_i
-    orientation = params[:orientation] # "horizontal" or "vertical"
+    orientation = params[:orientation]
 
     positions = if orientation == "horizontal"
       (start_x...(start_x + size)).map { |x| [ start_y, x ] }
@@ -57,17 +52,23 @@ class GamesController < ApplicationController
       (start_y...(start_y + size)).map { |y| [ y, start_x ] }
     end
 
-    # Validate boundaries.
     unless positions.all? { |row, col| row.between?(0, 9) && col.between?(0, 9) }
       render json: { error: "Ship out of bounds." }, status: :unprocessable_entity and return
     end
 
-    # Check for collisions.
     if positions.any? { |row, col| player_board[row][col] != "empty" }
       render json: { error: "Ship overlaps another ship." }, status: :unprocessable_entity and return
     end
 
-    # Place the ship manually.
+    positions.each do |row, col|
+      adjacent_cells(row, col).each do |adj_row, adj_col|
+        next if positions.include?([ adj_row, adj_col ])
+        if player_board[adj_row][adj_col] != "empty"
+          render json: { error: "Ships cannot be adjacent to one another." }, status: :unprocessable_entity and return
+        end
+      end
+    end
+
     positions.each { |row, col| player_board[row][col] = "ship_#{size}" }
     if role == 1
       @game.player1_board = player_board
@@ -79,7 +80,6 @@ class GamesController < ApplicationController
     render json: { board: player_board, message: "Ship placed successfully." }
   end
 
-  # POST /games/:uuid/finalize_placement
   def finalize_placement
     role = session["game_#{@game.uuid}_player_role"]
     if @game.status != "setup"
@@ -88,7 +88,6 @@ class GamesController < ApplicationController
 
     board = role == 1 ? @game.player1_board : @game.player2_board
 
-    # For each ship type, auto-place any missing ships on this player's board.
     ships_to_place.each do |size, count|
       placed_count = board.flatten.count { |cell| cell == "ship_#{size}" } / size
       missing_count = count - placed_count
@@ -100,7 +99,6 @@ class GamesController < ApplicationController
       end
     end
 
-    # Save current player's board and mark placement as done.
     if role == 1
       @game.player1_board = board
       @game.player1_placement_done = true
@@ -109,7 +107,6 @@ class GamesController < ApplicationController
       @game.player2_placement_done = true
     end
 
-    # If the placement deadline has passed OR if one player finalized, auto-finalize the other board.
     if Time.current > @game.placement_deadline || params[:force] == "true"
       if !@game.player1_placement_done
         @game.player1_board = auto_finalize_board(@game.player1_board)
@@ -123,7 +120,6 @@ class GamesController < ApplicationController
 
     @game.save!
 
-    # When both boards are finalized, change game status to ongoing.
     if @game.player1_placement_done && @game.player2_placement_done
       @game.update!(status: "ongoing")
     end
@@ -131,7 +127,21 @@ class GamesController < ApplicationController
     render json: { board: board, message: "Ship placement finalized.", status: @game.status }
   end
 
-  # POST /games/:uuid/move
+  def adjacent_cells(row, col)
+    neighbors = []
+    (-1..1).each do |dr|
+      (-1..1).each do |dc|
+        next if dr == 0 && dc == 0
+        new_row = row + dr
+        new_col = col + dc
+        if new_row.between?(0, 9) && new_col.between?(0, 9)
+          neighbors << [ new_row, new_col ]
+        end
+      end
+    end
+    neighbors
+  end
+
   def move
     session_key = "game_#{@game.uuid}_player_role"
     role = session[session_key]
@@ -185,7 +195,6 @@ class GamesController < ApplicationController
     render json: { message: message, game: @game.slice("player1_board", "player2_board", "current_turn", "status"), game_over: game_over }
   end
 
-  # GET /games/:uuid/state
   def state
     render json: @game.slice("player1_board", "player2_board", "current_turn", "status")
   end
@@ -196,7 +205,6 @@ class GamesController < ApplicationController
     @game = Game.find_by!(uuid: params[:uuid])
   end
 
-  # Defines the ships configuration.
   def ships_to_place
     {
       4 => 1,
@@ -206,7 +214,6 @@ class GamesController < ApplicationController
     }
   end
 
-  # Helper method to randomly place a ship of a given size.
   def place_ship_randomly(board, size)
     placed = false
     attempts = 0
@@ -223,7 +230,15 @@ class GamesController < ApplicationController
         positions = (start_y...(start_y + size)).map { |y| [ y, start_x ] }
       end
 
-      if positions.all? { |row, col| board[row][col] == "empty" }
+      next unless positions.all? { |row, col| board[row][col] == "empty" }
+
+      valid_placement = positions.all? do |row, col|
+        adjacent_cells(row, col).all? do |adj_row, adj_col|
+          positions.include?([ adj_row, adj_col ]) || board[adj_row][adj_col] == "empty"
+        end
+      end
+
+      if valid_placement
         positions.each { |row, col| board[row][col] = "ship_#{size}" }
         placed = true
       end
