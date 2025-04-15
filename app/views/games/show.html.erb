@@ -3,7 +3,7 @@
   <div data-controller="placement"
        data-placement-uuid-value="<%= @game.uuid %>"
        data-placement-player-value="<%= session["game_#{@game.uuid}_player_role"] %>"
-       data-placement-time-limit-value="999"
+       data-placement-time-limit-value="180"
        data-placement-ship1-url-value="<%= asset_path("ship_1.png") %>"
        data-placement-ship1-vertical-url-value="<%= asset_path("ship_1ver.png") %>"
        data-placement-ship2-url-value="<%= asset_path("ship_2.png") %>"
