@@ -59,26 +59,26 @@ class GamesController < ApplicationController
     if positions.any? { |row, col| player_board[row][col] != "empty" }
       render json: { error: "Ship overlaps another ship." }, status: :unprocessable_entity and return
     end
-  
+
     positions.each do |row, col|
       adjacent_cells(row, col).each do |adj_row, adj_col|
-        next if positions.include?([adj_row, adj_col])
+        next if positions.include?([ adj_row, adj_col ])
         if player_board[adj_row][adj_col] != "empty"
           render json: { error: "Ships cannot be adjacent to one another." }, status: :unprocessable_entity and return
         end
       end
     end
-  
+
     positions.each { |row, col| player_board[row][col] = "ship_#{size}" }
     if role == 1
       @game.player1_board = player_board
     else
       @game.player2_board = player_board
     end
-  
+
     @game.save!
     render json: { board: player_board, message: "Ship placed successfully." }
-  end  
+  end
 
   def finalize_placement
     role = session["game_#{@game.uuid}_player_role"]
@@ -135,7 +135,7 @@ class GamesController < ApplicationController
         new_row = row + dr
         new_col = col + dc
         if new_row.between?(0, 9) && new_col.between?(0, 9)
-          neighbors << [new_row, new_col]
+          neighbors << [ new_row, new_col ]
         end
       end
     end
@@ -229,22 +229,22 @@ class GamesController < ApplicationController
         start_x = rand(0..9)
         positions = (start_y...(start_y + size)).map { |y| [ y, start_x ] }
       end
-  
+
       next unless positions.all? { |row, col| board[row][col] == "empty" }
-  
+
       valid_placement = positions.all? do |row, col|
         adjacent_cells(row, col).all? do |adj_row, adj_col|
-          positions.include?([adj_row, adj_col]) || board[adj_row][adj_col] == "empty"
+          positions.include?([ adj_row, adj_col ]) || board[adj_row][adj_col] == "empty"
         end
       end
-  
+
       if valid_placement
         positions.each { |row, col| board[row][col] = "ship_#{size}" }
         placed = true
       end
     end
     placed
-  end  
+  end
 
   def auto_finalize_board(board)
     ships_to_place.each do |size, count|
