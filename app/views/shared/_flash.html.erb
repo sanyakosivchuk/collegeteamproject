@@ -1,0 +1,13 @@
+<div
+  data-controller="flash"
+  class="fixed top-4 inset-x-0 flex justify-center z-50 pointer-events-none"
+>
+  <% flash.each do |type, msg| %>
+    <div
+      data-flash-target="message"
+      class="pointer-events-auto max-w-md w-full mx-2 px-6 py-3 mb-2 bg-white border-2 border-blue rounded-lg font-bold text-blue-600 transition-opacity duration-500"
+    >
+      <%= msg %>
+    </div>
+  <% end %>
+</div>
