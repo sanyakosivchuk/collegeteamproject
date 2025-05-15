@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   root "games#index"
 
-  resources :games, param: :uuid, only: [:index, :show, :create] do
+  resources :games, param: :uuid, only: [ :index, :show, :create ] do
     member do
       post   :move
       post   :place_ship
