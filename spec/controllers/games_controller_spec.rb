@@ -12,6 +12,7 @@ RSpec.describe GamesController, type: :controller do
   end
 
   before do
+    allow(controller).to receive(:authenticate_user!).and_return(true)
     session["game_#{game.uuid}_player_role"] = 1
     game.update!(player1_session: session.id)
   end
