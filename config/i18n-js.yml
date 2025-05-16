@@ -1,0 +1,5 @@
+translations:
+  - file: "config/locales/*.yml"
+js:
+  file: "app/assets/config/translations.js"
+  namespace: I18n

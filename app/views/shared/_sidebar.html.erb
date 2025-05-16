@@ -9,14 +9,14 @@
 
   <nav class="flex-1">
     <ul class="space-y-3">
-    <li>
-      <%= link_to "Match History", matches_path,
-          class: "block px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition" %>
-    </li>
-    <li>
-      <%= link_to "Leaderboard", leaderboards_path,
-          class: "block px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition" %>
-    </li>
-  </ul>  
+      <li>
+        <%= link_to t("sidebar.match_history"), matches_path,
+              class: "block px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition" %>
+      </li>
+      <li>
+        <%= link_to t("sidebar.leaderboard"), leaderboards_path,
+              class: "block px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition" %>
+      </li>
+    </ul>
   </nav>
 </aside>
