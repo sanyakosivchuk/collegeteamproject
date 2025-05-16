@@ -1,40 +1,29 @@
-<nav class="fixed w-full z-30 bg-gradient-to-r from-blue-500 to-indigo-600 bg-opacity-90 backdrop-blur-md shadow-md">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-    <%= link_to "Battleship", root_path,
-          class: "text-2xl font-extrabold text-white hover:text-gray-100 transition-colors duration-200" %>
-
-    <div>
-      <% if user_signed_in? %>
-        <div class="relative" data-controller="dropdown">
-          <button data-action="click->dropdown#toggle"
-                  class="flex items-center space-x-2 px-4 py-2 bg-white bg-opacity-20 text-white rounded-full shadow-lg hover:bg-opacity-30 transform hover:scale-105 transition ease-out duration-150">
-            <span class="font-medium">
-              <%= current_user.email %>
-            </span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-
-          <div data-dropdown-target="menu"
-               class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-2xl ring-1 ring-black ring-opacity-5 overflow-hidden opacity-0 scale-95 transition-all duration-200 origin-top-right">
-            <%= link_to "Profile", "#",
-                class: "block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors" %>
-            <%= link_to "Logout", destroy_user_session_path,
-                data: { "turbo-method": :delete },
-                class: "block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors" %>              
-          </div>
+<nav class="fixed top-0 left-0 right-0 z-20 bg-gradient-to-r from-blue-500 to-indigo-600 bg-opacity-90 backdrop-blur-md shadow-md">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-end">
+    <% if user_signed_in? %>
+      <div class="relative" data-controller="dropdown">
+        <button data-action="click->dropdown#toggle"
+                class="flex items-center space-x-2 px-4 py-2 bg-white bg-opacity-20 text-white rounded-full shadow-lg hover:bg-opacity-30 transform hover:scale-105 transition ease-out duration-150">
+          <span class="font-medium"><%= current_user.email %></span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div data-dropdown-target="menu"
+             class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-2xl ring-1 ring-black ring-opacity-5 overflow-hidden opacity-0 scale-95 transition-all duration-200 origin-top-right">
+          <%= link_to "Profile", "#", class: "block px-4 py-2 text-gray-700 hover:bg-gray-100" %>
+          <%= link_to "Logout", destroy_user_session_path, data: { turbo_method: :delete },
+                      class: "block px-4 py-2 text-gray-700 hover:bg-gray-100" %>
         </div>
-      <% else %>
-        <div class="flex items-center space-x-4">
-          <%= link_to "Sign in", new_user_session_path,
-                class: "px-4 py-2 bg-white bg-opacity-20 text-white rounded-full shadow-lg hover:bg-opacity-30 transform hover:scale-105 transition ease-out duration-150" %>
-          <%= link_to "Sign up", new_user_registration_path,
-                class: "px-4 py-2 bg-white bg-opacity-20 text-white rounded-full shadow-lg hover:bg-opacity-30 transform hover:scale-105 transition ease-out duration-150" %>
-        </div>
-      <% end %>
-    </div>
+      </div>
+    <% else %>
+      <div class="flex items-center space-x-4">
+        <%= link_to "Sign in", new_user_session_path,
+                    class: "px-4 py-2 bg-white bg-opacity-20 text-white rounded-full shadow-lg hover:bg-opacity-30 transform hover:scale-105 transition ease-out duration-150" %>
+        <%= link_to "Sign up", new_user_registration_path,
+                    class: "px-4 py-2 bg-white bg-opacity-20 text-white rounded-full shadow-lg hover:bg-opacity-30 transform hover:scale-105 transition ease-out duration-150" %>
+      </div>
+    <% end %>
   </div>
 </nav>
-<div class="h-16"></div>

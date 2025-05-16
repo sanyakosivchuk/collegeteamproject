@@ -1,0 +1,20 @@
+<aside class="fixed inset-y-0 left-0 w-64 z-30 p-6
+              bg-gradient-to-b from-blue-500 to-indigo-600 bg-opacity-90
+              backdrop-blur-md shadow-md text-white flex flex-col">
+  <%= link_to root_path, class: "block mb-8" do %>
+    <%= image_tag "logo.png", class: "w-32 mx-auto" %>
+  <% end %>
+
+  <hr class="border-white/50 mb-6">
+
+  <nav class="flex-1">
+    <h2 class="text-xs font-semibold uppercase mb-4 tracking-wide">Coming Soon</h2>
+    <ul class="space-y-3">
+      <% ["Match History", "Ratings", "Leaderboards"].each do |item| %>
+        <li>
+          <%= link_to item, "#", class: "block px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition" %>
+        </li>
+      <% end %>
+    </ul>
+  </nav>
+</aside>
