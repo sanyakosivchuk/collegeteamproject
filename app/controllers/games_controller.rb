@@ -21,7 +21,7 @@ class GamesController < ApplicationController
 
   def show
     session_key = "game_#{@game.uuid}_player_role"
-  
+
     unless session[session_key]
       if @game.player1_session.nil?
         session[session_key] = 1
@@ -33,7 +33,7 @@ class GamesController < ApplicationController
         session[session_key] = "spectator"
       end
     end
-  end  
+  end
 
   def place_ship
     role = session["game_#{@game.uuid}_player_role"]

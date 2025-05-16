@@ -17,11 +17,11 @@ class Game < ApplicationRecord
   def record_match_if_finished
     return unless status =~ /finished/
     return unless player1 && player2
-  
+
     winner_role = status.include?("player1") ? 1 : 2
     winner      = (winner_role == 1 ? player1 : player2)
     loser       = (winner_role == 1 ? player2 : player1)
-  
+
     Match.create!(
       game: self,
       player1: player1,
@@ -29,10 +29,10 @@ class Game < ApplicationRecord
       winner:  winner,
       finished_at: Time.current
     )
-  
+
     ActiveRecord::Base.transaction do
       winner.apply_result(loser.rating, 1)
       loser .apply_result(winner.rating, 0)
     end
-  end  
+  end
 end
