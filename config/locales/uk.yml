@@ -1,31 +1,65 @@
 uk:
   app_name: "Морський бій"
+
+  nav:
+    profile:    "Профіль"
+    logout:     "Вийти"
+    sign_in:    "Увійти"
+    sign_up:    "Зареєструватися"
+
+  sidebar:
+    match_history: "Історія матчів"
+    leaderboard:   "Таблиця лідерів"
+
   dashboard:
-    title: "Центр командування"
-    tagline: "Готові довести свою майстерність на морі?"
-    quick_match: "Швидкий матч"
+    title:               "Центр командування"
+    tagline:             "Готові довести свою майстерність на морі?"
+    quick_match:         "Швидкий матч"
     create_private_game: "Створити приватну гру"
-    your_rating: "Ваш рейтинг"
-    open_games: "Відкриті ігри"
-    host: "Ведучий"
+    your_rating:         "Ваш рейтинг"
+    open_games:          "Відкриті ігри"
+    host:                "Ведучий"
+    rating:              "Рейтинг"
+    created:             "Створено"
+    finding_match:       "Пошук матчу…"
+    no_suitable_games:   "Немає підходящих ігор"
+    join:                "Приєднатися"
+
+  games:
+    show:
+      placement:
+        header:  "Розставте кораблі, гравець %{player}"
+        done:    "Готово"
+        waiting: "Очікування завершення розстановки суперником…"
+      play:
+        you_are:        "Ви гравець %{player}"
+        your_board:     "Ваше поле"
+        opponent_board: "Поле суперника"
+        hit:            "Влучання!"
+        miss:           "Промах!"
+
+  leaderboard:
+    title:  "Таблиця лідерів"
+    rank:   "#"
+    player: "Гравець"
     rating: "Рейтинг"
-    created: "Створено"
-    join: "Приєднатися"
+
+  match_history:
+    title: "Історія матчів"
+    vs:    "проти"
+    win:   "ПЕРЕМОГА"
+    loss:  "ПОРАЗКА"
+
   placement:
-    timer: "Залишилося: %{count} секунд"
-    header: "Розставте кораблі, гравець %{player}"
-    done: "Готово"
-    waiting_opponent: "Очікування завершення розстановки суперником…"
-    ship_placed: "Корабель розміщено"
-    error_placing: "Помилка розміщення корабля"
+    time_remaining:   "Залишилося: %{count} секунд"
+    waiting_opponent: "Очікуйте, поки суперник закінчить розстановку…"
     error_finalizing: "Помилка завершення розстановки"
-  game:
-    your_board: "Ваше поле"
-    opponent_board: "Поле суперника"
-    hit: "Влучання!"
-    miss: "Промах!"
-    win_message: "Влучання! Ви потопили всі кораблі суперника. Гравець %{player} переміг!"
-    not_your_turn: "Не ваш хід."
-  flash:
-    success: "Корабель успішно розміщено"
-    error: "Помилка"
+    ship_placed:      "Корабель розміщено"
+    error_placing:    "Помилка розміщення корабля"
+    ship_label:       "Корабель %{size}"
+    remaining:        "залишилося %{count}"
+    orientation:      "Орієнтація: %{orientation}"
+    flip:             "Перевернути"
+    orientation_values:
+      horizontal: "горизонтально"
+      vertical:   "вертикально"

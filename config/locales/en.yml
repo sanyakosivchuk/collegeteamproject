@@ -1,31 +1,65 @@
 en:
   app_name: "Sea Battle"
+
+  nav:
+    profile:    "Profile"
+    logout:     "Logout"
+    sign_in:    "Sign in"
+    sign_up:    "Sign up"
+
+  sidebar:
+    match_history: "Match History"
+    leaderboard:   "Leaderboard"
+
   dashboard:
-    title: "Battle Command Center"
-    tagline: "Ready to prove your skill on the high seas?"
-    quick_match: "Quick Match"
+    title:               "Battle Command Center"
+    tagline:             "Ready to prove your skill on the high seas?"
+    quick_match:         "Quick Match"
     create_private_game: "Create Private Game"
-    your_rating: "Your Rating"
-    open_games: "Open Games"
-    host: "Host"
+    your_rating:         "Your Rating"
+    open_games:          "Open Games"
+    host:                "Host"
+    rating:              "Rating"
+    created:             "Created"
+    finding_match:       "Finding match…"
+    no_suitable_games:   "No suitable games at the moment"
+    join:                "Join"
+
+  games:
+    show:
+      placement:
+        header:  "Place your ships, Player %{player}"
+        done:    "I'm Done"
+        waiting: "Waiting for the opponent to finish ship placement…"
+      play:
+        you_are:        "You are Player %{player}"
+        your_board:     "Your Board"
+        opponent_board: "Opponent's Board"
+        hit:            "Hit!"
+        miss:           "Miss!"
+
+  leaderboard:
+    title:  "Leaderboard"
+    rank:   "#"
+    player: "Player"
     rating: "Rating"
-    created: "Created"
-    join: "Join"
+
+  match_history:
+    title: "Match History"
+    vs:    "vs"
+    win:   "WIN"
+    loss:  "LOSS"
+
   placement:
-    timer: "Time remaining: %{count} seconds"
-    header: "Place your ships, Player %{player}"
-    done: "I'm Done"
+    time_remaining:   "Time remaining: %{count} seconds"
     waiting_opponent: "Waiting for the opponent to finish ship placement…"
-    ship_placed: "Ship placed"
-    error_placing: "Error placing ship"
     error_finalizing: "Error finalizing placement"
-  game:
-    your_board: "Your Board"
-    opponent_board: "Opponent's Board"
-    hit: "Hit!"
-    miss: "Miss!"
-    win_message: "Hit! You sunk all opponent's ships. Player %{player} wins!"
-    not_your_turn: "Not your turn."
-  flash:
-    success: "Successfully placed ship"
-    error: "Error"
+    ship_placed:      "Ship placed"
+    error_placing:    "Error placing ship"
+    ship_label:       "Ship %{size}"
+    remaining:        "%{count} remaining"
+    orientation:      "Orientation: %{orientation}"
+    flip:             "Flip"
+    orientation_values:
+      horizontal: "horizontal"
+      vertical:   "vertical"

@@ -16,6 +16,8 @@ export default class extends Controller {
     ship4VerticalUrl: String
   }
 
+  static targets = ["timer", "message"]
+
   connect() {
     this.remainingTime = this.timeLimitValue
     this.timerInterval = setInterval(() => this.tick(), 1000)
@@ -36,9 +38,10 @@ export default class extends Controller {
 
   tick() {
     this.remainingTime--
-    const timerDisplay = document.getElementById("placement-timer")
-    if (timerDisplay)
-      timerDisplay.textContent = `Time remaining: ${this.remainingTime} seconds`
+    if (this.hasTimerTarget) {
+      this.timerTarget.textContent =
+        I18n.t("placement.time_remaining", { count: this.remainingTime })
+    }
     if (this.remainingTime <= 0) {
       clearInterval(this.timerInterval)
       this.finalizePlacement()
@@ -55,18 +58,17 @@ export default class extends Controller {
         if (data.status === "ongoing") {
           window.location.reload()
         } else {
-          this.flash("Waiting for the opponent to finish ship placement…", "info")
+          this.flash(I18n.t("placement.waiting_opponent"), "info")
           this.startPolling()
         }
       })
-      .catch(() => this.flash("Error finalizing placement", "error"))
+      .catch(() => this.flash(I18n.t("placement.error_finalizing"), "error"))
   }
 
   startPolling() {
     if (this.pollInterval) return
     this.pollInterval = setInterval(() => {
-      fetch(`/games/${this.uuidValue}/state`,
-            { headers: { Accept: "application/json" } })
+      fetch(`/games/${this.uuidValue}/state`, { headers: { Accept: "application/json" } })
         .then(r => r.json())
         .then(game => {
           if (game.status === "ongoing") {
@@ -84,18 +86,26 @@ export default class extends Controller {
     for (const size in this.ships) {
       const count = this.ships[size]
       if (count > 0) {
-        const o = this.shipOrientations[size]
+        const orientation       = this.shipOrientations[size]
+        const shipLabel         = I18n.t("placement.ship_label",       { size })
+        const remainingLabel    = I18n.t("placement.remaining",        { count })
+        const orientationValue  = I18n.t(`placement.orientation_values.${orientation}`)
+        const orientationLabel  = I18n.t("placement.orientation",     { orientation: orientationValue })
+        const flipLabel         = I18n.t("placement.flip")
+
         const ship = document.createElement("div")
         ship.className = "inline-block m-2 p-2 border border-gray-400 cursor-move"
         ship.draggable = true
         ship.dataset.shipSize = size
         ship.addEventListener("dragstart", this.dragStart.bind(this))
-        ship.innerHTML = `<strong>Ship ${size}</strong> (${count} remaining)<br>Orientation: ${o}`
+        ship.innerHTML = `<strong>${shipLabel}</strong> (${remainingLabel})<br>${orientationLabel}`
+
         const flip = document.createElement("button")
-        flip.textContent = "Flip"
+        flip.textContent = flipLabel
         flip.dataset.shipSize = size
         flip.addEventListener("click", this.flipShip.bind(this))
         ship.appendChild(flip)
+
         palette.appendChild(ship)
       }
     }
@@ -167,10 +177,10 @@ export default class extends Controller {
         } else {
           this.drawShipOnBoard(sx, sy, shipSize, orientation)
           this.decrementShipCount(shipSize)
-          this.flash("Ship placed", "info")
+          this.flash(I18n.t("placement.ship_placed"), "info")
         }
       })
-      .catch(() => this.flash("Error placing ship", "error"))
+      .catch(() => this.flash(I18n.t("placement.error_placing"), "error"))
   }
 
   drawShipOnBoard(sx, sy, size, orientation) {

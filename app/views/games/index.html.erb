@@ -1,8 +1,8 @@
-<div class="absolute top-4 right-4 z-50">
-  <%= render "shared/locale_selector" %>
-</div>
-
-<div data-controller="dashboard" class="mx-auto w-full max-w-4xl px-6">
+<div data-controller="dashboard"
+     data-dashboard-no-suitable-games-value="<%= j t('dashboard.no_suitable_games') %>"
+     data-dashboard-finding-match-value="<%= j t('dashboard.finding_match') %>"
+     data-dashboard-join-label-value="<%= j t('dashboard.join') %>"
+     class="mx-auto w-full max-w-4xl px-6">
   <div class="bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl shadow-xl overflow-hidden">
     <div class="px-8 py-6 flex flex-col gap-6 items-center">
       <%= image_tag "logo.png", alt: t("app_name"), class: "w-32 mb-2" %>
