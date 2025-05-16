@@ -26,7 +26,13 @@ export default class extends Controller {
               <td class="px-4 py-3 text-sm">${r.rating}</td>
               <td class="px-4 py-3 text-sm">${r.created} ago</td>
               <td class="px-4 py-3">
-                <a href="/games/${r.uuid}" class="bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded text-sm font-semibold">Join</a>
+                <a 
+                  href="/games/${r.uuid}" 
+                  data-turbo="false" 
+                  class="bg-blue-600 hover:bg-blue-700 py-2 px-4 rounded text-sm font-semibold"
+                >
+                  Join
+                </a>
               </td>
             </tr>
           `)

@@ -53,7 +53,7 @@ class GamesController < ApplicationController
         created: view_context.time_ago_in_words(g.created_at) }
     }
   end
-  
+
   def matchmaking
     range = 400
     rating = current_user.rating
@@ -61,7 +61,7 @@ class GamesController < ApplicationController
                .where.not(player1_id: current_user.id)
                .includes(:player1)
                .detect { |g| (g.player1&.rating.to_i - rating).abs <= range }
-  
+
     unless game
       placement_deadline = 60.seconds.from_now
       game = Game.create!(
@@ -76,7 +76,7 @@ class GamesController < ApplicationController
       session["game_#{game.uuid}_player_role"] = 1
       render json: { uuid: game.uuid, role: 1, wait: true } and return
     end
-  
+
     game.update!(player2_session: session.id, player2: current_user)
     session["game_#{game.uuid}_player_role"] = 2
     render json: { uuid: game.uuid, role: 2, wait: false }
@@ -248,7 +248,7 @@ class GamesController < ApplicationController
                        "player2_board",
                        "current_turn",
                        "status")
-    data[:players] = [@game.player1_session, @game.player2_session].compact.size
+    data[:players] = [ @game.player1_session, @game.player2_session ].compact.size
     render json: data
   end
 
