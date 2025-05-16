@@ -13,5 +13,9 @@ Rails.application.routes.draw do
       post   :finalize_placement
       get    :state
     end
+    collection do
+      post :matchmaking
+      get  :open
+    end
   end
 end

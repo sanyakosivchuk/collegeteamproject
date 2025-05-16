@@ -3,6 +3,13 @@ class GamesController < ApplicationController
   before_action :set_game, only: [ :show, :move, :state, :place_ship, :finalize_placement ]
 
   def index
+    range = 400
+    @rating   = current_user.rating
+    @joinable = Game
+                  .where(status: "setup", player2_session: nil)
+                  .includes(:player1)
+                  .order(created_at: :desc)
+                  .select { |g| (g.player1&.rating.to_i - @rating).abs <= range }
   end
 
   def create
@@ -33,6 +40,46 @@ class GamesController < ApplicationController
         session[session_key] = "spectator"
       end
     end
+  end
+
+  def open
+    range = 400
+    rating = current_user.rating
+    games = Game.where(status: "setup", player2_session: nil)
+                .includes(:player1)
+                .select { |g| (g.player1&.rating.to_i - rating).abs <= range }
+    render json: games.map { |g|
+      { id: g.id, uuid: g.uuid, host: g.player1.email, rating: g.player1.rating,
+        created: view_context.time_ago_in_words(g.created_at) }
+    }
+  end
+  
+  def matchmaking
+    range = 400
+    rating = current_user.rating
+    game = Game.where(status: "setup", player2_session: nil)
+               .where.not(player1_id: current_user.id)
+               .includes(:player1)
+               .detect { |g| (g.player1&.rating.to_i - rating).abs <= range }
+  
+    unless game
+      placement_deadline = 60.seconds.from_now
+      game = Game.create!(
+        player1_board: Array.new(10) { Array.new(10, "empty") },
+        player2_board: Array.new(10) { Array.new(10, "empty") },
+        current_turn: 1,
+        status: "setup",
+        placement_deadline: placement_deadline,
+        player1_session: session.id,
+        player1: current_user
+      )
+      session["game_#{game.uuid}_player_role"] = 1
+      render json: { uuid: game.uuid, role: 1, wait: true } and return
+    end
+  
+    game.update!(player2_session: session.id, player2: current_user)
+    session["game_#{game.uuid}_player_role"] = 2
+    render json: { uuid: game.uuid, role: 2, wait: false }
   end
 
   def place_ship
@@ -197,7 +244,12 @@ class GamesController < ApplicationController
   end
 
   def state
-    render json: @game.slice("player1_board", "player2_board", "current_turn", "status")
+    data = @game.slice("player1_board",
+                       "player2_board",
+                       "current_turn",
+                       "status")
+    data[:players] = [@game.player1_session, @game.player2_session].compact.size
+    render json: data
   end
 
   private
