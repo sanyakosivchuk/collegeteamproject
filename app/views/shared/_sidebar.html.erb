@@ -8,13 +8,15 @@
   <hr class="border-white/50 mb-6">
 
   <nav class="flex-1">
-    <h2 class="text-xs font-semibold uppercase mb-4 tracking-wide">Coming Soon</h2>
     <ul class="space-y-3">
-      <% ["Match History", "Ratings", "Leaderboards"].each do |item| %>
-        <li>
-          <%= link_to item, "#", class: "block px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition" %>
-        </li>
-      <% end %>
-    </ul>
+    <li>
+      <%= link_to "Match History", matches_path,
+          class: "block px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition" %>
+    </li>
+    <li>
+      <%= link_to "Leaderboard", leaderboards_path,
+          class: "block px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition" %>
+    </li>
+  </ul>  
   </nav>
 </aside>

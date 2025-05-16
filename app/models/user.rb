@@ -10,6 +10,8 @@ class User < ApplicationRecord
 
   K_FACTOR = 32.0
 
+  after_initialize :set_default_rating, if: :new_record?
+
   def expected_score(opponent_rating)
     1.0 / (1.0 + 10 ** ((opponent_rating - rating) / 400.0))
   end
@@ -17,5 +19,9 @@ class User < ApplicationRecord
   def apply_result(opponent_rating, score)
     self.rating = (rating + K_FACTOR * (score - expected_score(opponent_rating))).round
     save!
+  end
+
+  def set_default_rating
+    self.rating ||= 1000
   end
 end
