@@ -1,9 +1,9 @@
 FactoryBot.define do
   factory :match do
-    game { nil }
-    player1 { nil }
-    player2 { nil }
-    winner { nil }
-    finished_at { "2025-05-16 16:06:57" }
+    association :game
+    association :player1, factory: :user
+    association :player2, factory: :user
+    association :winner,  factory: :user
+    finished_at { Time.current }
   end
 end
