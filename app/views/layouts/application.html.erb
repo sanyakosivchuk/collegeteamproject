@@ -7,29 +7,38 @@
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
-    <%= yield :head %>
-
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
-
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
+  <body class="relative min-h-screen overflow-hidden">
+    <div class="fixed inset-0 z-0">
+      <div
+        class="absolute inset-0 bg-cover bg-center filter blur-lg"
+        style="background-image: url('<%= asset_path('background.png') %>')"
+      ></div>
+    </div>
 
-  <body class="bg-cover bg-center" style="background-image: url('<%= asset_path('background.png') %>');">
-    <%= render 'shared/flash' %>
     <% if user_signed_in? %>
-      <%= render 'shared/navbar' %>
+      <%= render 'shared/navbar' %>   <!-- this has z-20 -->
+      <%= render 'shared/sidebar' %>  <!-- this has z-30 -->
     <% end %>
-    <main class="flex items-center justify-center min-h-screen">
-      <%= yield %>
-    </main>
+
+    <%= render 'shared/flash' %>
+
+    <%
+      container_classes = [
+        "relative z-10 h-screen",
+        (user_signed_in? ? "pt-16 pl-64" : "pt-0")
+      ].join(" ")
+    %>
+    <div class="<%= container_classes %>">
+      <main class="h-full flex items-center justify-center overflow-hidden">
+        <%= yield %>
+      </main>
+    </div>
   </body>
 </html>
