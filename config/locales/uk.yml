@@ -1,0 +1,31 @@
+uk:
+  app_name: "Морський бій"
+  dashboard:
+    title: "Центр командування"
+    tagline: "Готові довести свою майстерність на морі?"
+    quick_match: "Швидкий матч"
+    create_private_game: "Створити приватну гру"
+    your_rating: "Ваш рейтинг"
+    open_games: "Відкриті ігри"
+    host: "Ведучий"
+    rating: "Рейтинг"
+    created: "Створено"
+    join: "Приєднатися"
+  placement:
+    timer: "Залишилося: %{count} секунд"
+    header: "Розставте кораблі, гравець %{player}"
+    done: "Готово"
+    waiting_opponent: "Очікування завершення розстановки суперником…"
+    ship_placed: "Корабель розміщено"
+    error_placing: "Помилка розміщення корабля"
+    error_finalizing: "Помилка завершення розстановки"
+  game:
+    your_board: "Ваше поле"
+    opponent_board: "Поле суперника"
+    hit: "Влучання!"
+    miss: "Промах!"
+    win_message: "Влучання! Ви потопили всі кораблі суперника. Гравець %{player} переміг!"
+    not_your_turn: "Не ваш хід."
+  flash:
+    success: "Корабель успішно розміщено"
+    error: "Помилка"

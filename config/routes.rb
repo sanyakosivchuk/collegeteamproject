@@ -5,6 +5,7 @@ Rails.application.routes.draw do
 
   resources :leaderboards, only: [ :index ]
   resources :matches, only: [ :index ]
+  post "/locale", to: "locales#update", as: :locale
 
   resources :games, param: :uuid, only: [ :index, :show, :create ] do
     member do

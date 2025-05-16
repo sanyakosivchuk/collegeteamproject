@@ -1,5 +1,7 @@
 <nav class="fixed top-0 left-0 right-0 z-20 bg-gradient-to-r from-blue-500 to-indigo-600 bg-opacity-90 backdrop-blur-md shadow-md">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-end">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-end space-x-4">
+    <%= render "shared/locale_selector" %>
+
     <% if user_signed_in? %>
       <div class="relative" data-controller="dropdown">
         <button data-action="click->dropdown#toggle"
@@ -12,18 +14,20 @@
         </button>
         <div data-dropdown-target="menu"
              class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-2xl ring-1 ring-black ring-opacity-5 overflow-hidden opacity-0 scale-95 transition-all duration-200 origin-top-right">
-          <%= link_to "Profile", "#", class: "block px-4 py-2 text-gray-700 hover:bg-gray-100" %>
-          <%= link_to "Logout", destroy_user_session_path, data: { turbo_method: :delete },
+          <%= link_to t("nav.profile"), "#", class: "block px-4 py-2 text-gray-700 hover:bg-gray-100" %>
+          <%= link_to t("nav.logout"),
+                      destroy_user_session_path,
+                      data: { turbo_method: :delete },
                       class: "block px-4 py-2 text-gray-700 hover:bg-gray-100" %>
         </div>
       </div>
     <% else %>
-      <div class="flex items-center space-x-4">
-        <%= link_to "Sign in", new_user_session_path,
-                    class: "px-4 py-2 bg-white bg-opacity-20 text-white rounded-full shadow-lg hover:bg-opacity-30 transform hover:scale-105 transition ease-out duration-150" %>
-        <%= link_to "Sign up", new_user_registration_path,
-                    class: "px-4 py-2 bg-white bg-opacity-20 text-white rounded-full shadow-lg hover:bg-opacity-30 transform hover:scale-105 transition ease-out duration-150" %>
-      </div>
+      <%= link_to t("nav.sign_in"),
+                  new_user_session_path,
+                  class: "px-4 py-2 bg-white bg-opacity-20 text-white rounded-full shadow-lg hover:bg-opacity-30 transform hover:scale-105 transition ease-out duration-150" %>
+      <%= link_to t("nav.sign_up"),
+                  new_user_registration_path,
+                  class: "px-4 py-2 bg-white bg-opacity-20 text-white rounded-full shadow-lg hover:bg-opacity-30 transform hover:scale-105 transition ease-out duration-150" %>
     <% end %>
   </div>
 </nav>
