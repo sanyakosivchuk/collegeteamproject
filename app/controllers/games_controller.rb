@@ -15,24 +15,25 @@ class GamesController < ApplicationController
       placement_deadline: placement_deadline
     )
     session["game_#{@game.uuid}_player_role"] = 1
-    @game.update!(player1_session: session.id)
+    @game.update!(player1_session: session.id, player1: current_user)
     redirect_to game_path(@game)
   end
 
   def show
     session_key = "game_#{@game.uuid}_player_role"
+  
     unless session[session_key]
       if @game.player1_session.nil?
         session[session_key] = 1
-        @game.update!(player1_session: session.id)
+        @game.update!(player1_session: session.id, player1: current_user)
       elsif @game.player2_session.nil?
         session[session_key] = 2
-        @game.update!(player2_session: session.id)
+        @game.update!(player2_session: session.id, player2: current_user)
       else
         session[session_key] = "spectator"
       end
     end
-  end
+  end  
 
   def place_ship
     role = session["game_#{@game.uuid}_player_role"]
