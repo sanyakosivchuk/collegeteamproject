@@ -1,4 +1,3 @@
-// app/javascript/controllers/dashboard_controller.js
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
@@ -22,10 +21,10 @@ export default class extends Controller {
         rows.forEach(r => {
           tbody.insertAdjacentHTML("beforeend", `
             <tr class="hover:bg-white/10">
-              <td class="px-4 py-3 text-sm">${r.host}</td>
-              <td class="px-4 py-3 text-sm">${r.rating}</td>
-              <td class="px-4 py-3 text-sm">${r.created} ago</td>
-              <td class="px-4 py-3">
+              <td class="px-2 sm:px-4 py-3 text-sm">${r.host}</td>
+              <td class="px-2 sm:px-4 py-3 text-sm">${r.rating}</td>
+              <td class="px-2 sm:px-4 py-3 text-sm">${r.created} ago</td>
+              <td class="px-2 sm:px-4 py-3">
                 <a 
                   href="/games/${r.uuid}" 
                   data-turbo="false" 
@@ -49,7 +48,10 @@ export default class extends Controller {
     btn.disabled = true
     btn.innerHTML = `<svg class="animate-spin h-5 w-5 mr-2 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8"></path></svg>Finding match…`
 
-    fetch("/games/matchmaking", { method: "POST", headers: { "X-CSRF-Token": document.querySelector("[name=csrf-token]").content } })
+    fetch("/games/matchmaking", {
+      method: "POST",
+      headers: { "X-CSRF-Token": document.querySelector("[name=csrf-token]").content }
+    })
       .then(r => r.json())
       .then(data => {
         if (data.wait) {

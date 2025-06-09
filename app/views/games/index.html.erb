@@ -1,47 +1,43 @@
-<div data-controller="dashboard" class="mx-auto w-full max-w-4xl px-6">
+<div data-controller="dashboard" class="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8">
   <div class="bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl shadow-xl overflow-hidden">
-
-    <div class="px-8 py-6 flex flex-col gap-6 items-center">
-      <%= image_tag "logo.png", alt: "Battleship Logo", class: "w-32 mb-2" %>
-      <h1 class="text-3xl font-semibold">Battle Command Center</h1>
-      <p class="text-sm text-blue-200">Ready to prove your skill on the high seas?</p>
+    <div class="p-4 sm:p-6 md:p-8 flex flex-col gap-6 items-center">
+      <%= image_tag "logo.png", alt: "Battleship Logo", class: "w-24 sm:w-32 mb-2" %>
+      <h1 class="text-2xl sm:text-3xl font-semibold text-center">Battle Command Center</h1>
+      <p class="text-xs sm:text-sm text-blue-200 text-center">Ready to prove your skill on the high seas?</p>
 
       <div class="w-full flex flex-col md:flex-row gap-4 mt-4">
         <button data-action="dashboard#quickMatch"
-                class="flex-1 bg-white/20 hover:bg-white/30 text-white py-3 rounded-lg font-bold transition">
+                class="w-full flex-1 bg-white/20 hover:bg-white/30 text-white py-3 rounded-lg font-bold transition">
           🚀 Quick Match
         </button>
 
-        <%= button_to "Create Private Game", games_path,
-              method: :post,
-              class: "flex-1 bg-white/20 hover:bg-white/30 text-white py-3 rounded-lg font-bold transition" %>
+        <%= button_to "Create Private Game", games_path, method: :post,
+              class: "w-full flex-1 bg-white/20 hover:bg-white/30 text-white py-3 rounded-lg font-bold transition" %>
       </div>
 
-      <div class="w-full flex items-center justify-between mt-6">
-        <h2 class="text-xl font-semibold">Open Games</h2>
-        <span class="text-lg font-semibold flex items-center space-x-1">
+      <div class="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between mt-6 gap-2 sm:gap-0">
+        <h2 class="text-lg sm:text-xl font-semibold">Open Games</h2>
+        <span class="text-base sm:text-lg font-semibold flex items-center space-x-1">
           <span>🏆</span>
           <span>Your Rating:</span>
           <span class="font-bold"><%= current_user.rating %></span>
         </span>
-      </div>    
+      </div>
 
-      <div class="w-full overflow-y-auto max-h-[50vh]">
-        <table class="w-full divide-y divide-white/30">
+      <div class="w-full overflow-auto max-h-[50vh]">
+        <table class="w-full table-auto divide-y divide-white/30">
           <thead class="bg-white/10 sticky top-0">
             <tr>
-              <th class="px-4 py-2 text-left text-sm uppercase">Host</th>
-              <th class="px-4 py-2 text-left text-sm uppercase">Rating</th>
-              <th class="px-4 py-2 text-left text-sm uppercase">Created</th>
-              <th class="px-4 py-2"></th>
+              <th class="px-2 sm:px-4 py-2 text-left text-xs sm:text-sm uppercase">Host</th>
+              <th class="px-2 sm:px-4 py-2 text-left text-xs sm:text-sm uppercase">Rating</th>
+              <th class="px-2 sm:px-4 py-2 text-left text-xs sm:text-sm uppercase">Created</th>
+              <th class="px-2 sm:px-4 py-2"></th>
             </tr>
           </thead>
           <tbody>
-            <!-- filled by Stimulus -->
           </tbody>
         </table>
       </div>
     </div>
-
   </div>
 </div>
