@@ -1,22 +1,12 @@
-<aside class="fixed inset-y-0 left-0 w-64 z-30 p-6
-              bg-gradient-to-b from-blue-500 to-indigo-600 bg-opacity-90
-              backdrop-blur-md shadow-md text-white flex flex-col">
+<aside data-sidebar-target="panel" class="fixed inset-y-0 left-0 w-64 z-50 md:z-50 p-6 bg-gradient-to-b from-blue-500 to-indigo-600 bg-opacity-90 backdrop-blur-md shadow-md text-white flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
   <%= link_to root_path, class: "block mb-8" do %>
     <%= image_tag "logo.png", class: "w-32 mx-auto" %>
   <% end %>
-
   <hr class="border-white/50 mb-6">
-
   <nav class="flex-1">
     <ul class="space-y-3">
-    <li>
-      <%= link_to "Match History", matches_path,
-          class: "block px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition" %>
-    </li>
-    <li>
-      <%= link_to "Leaderboard", leaderboards_path,
-          class: "block px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition" %>
-    </li>
-  </ul>  
+      <li><%= link_to "Match History", matches_path, class: "block px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition" %></li>
+      <li><%= link_to "Leaderboard", leaderboards_path, class: "block px-4 py-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition" %></li>
+    </ul>
   </nav>
 </aside>
