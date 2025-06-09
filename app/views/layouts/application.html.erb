@@ -14,27 +14,16 @@
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-  <body class="relative min-h-screen overflow-hidden">
+  <body data-controller="sidebar" class="relative min-h-screen overflow-hidden">
     <div class="fixed inset-0 z-0">
-      <div
-        class="absolute inset-0 bg-cover bg-center filter blur-lg"
-        style="background-image: url('<%= asset_path('background.png') %>')"
-      ></div>
+      <div class="absolute inset-0 bg-cover bg-center filter blur-lg" style="background-image: url('<%= asset_path('background.png') %>')"></div>
     </div>
-
     <% if user_signed_in? %>
-      <%= render 'shared/navbar' %>   <!-- this has z-20 -->
-      <%= render 'shared/sidebar' %>  <!-- this has z-30 -->
+      <%= render 'shared/navbar' %>
+      <%= render 'shared/sidebar' %>
     <% end %>
-
     <%= render 'shared/flash' %>
-
-    <%
-      container_classes = [
-        "relative z-10 h-screen",
-        (user_signed_in? ? "pt-16 pl-64" : "pt-0")
-      ].join(" ")
-    %>
+    <% container_classes = ["relative z-10 h-screen", (user_signed_in? ? "pt-16 md:pl-64" : "pt-0")].join(" ") %>
     <div class="<%= container_classes %>">
       <main class="h-full flex items-center justify-center overflow-auto">
         <%= yield %>
