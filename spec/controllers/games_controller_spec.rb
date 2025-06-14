@@ -1,18 +1,21 @@
 require "rails_helper"
 
 RSpec.describe GamesController, type: :controller do
+  let(:user) { User.create!(email: "test@example.com", password: "password", rating: 1200) }
   let(:game) do
     Game.create!(
       player1_board: Array.new(10) { Array.new(10, "empty") },
       player2_board: Array.new(10) { Array.new(10, "empty") },
       current_turn: 1,
       status: "setup",
-      placement_deadline: 10.minutes.from_now
+      placement_deadline: 10.minutes.from_now,
+      player1: user
     )
   end
 
   before do
     allow(controller).to receive(:authenticate_user!).and_return(true)
+    allow(controller).to receive(:current_user).and_return(user)
     session["game_#{game.uuid}_player_role"] = 1
     game.update!(player1_session: session.id)
   end
