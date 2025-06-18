@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_16_140017) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_18_130429) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -31,6 +31,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_16_140017) do
     t.bigint "player1_id"
     t.string "player2_type"
     t.bigint "player2_id"
+    t.datetime "turn_started_at"
+    t.integer "player1_missed_turns", default: 0
+    t.integer "player2_missed_turns", default: 0
     t.index ["player1_type", "player1_id"], name: "index_games_on_player1"
     t.index ["player2_type", "player2_id"], name: "index_games_on_player2"
     t.index ["uuid"], name: "index_games_on_uuid", unique: true
