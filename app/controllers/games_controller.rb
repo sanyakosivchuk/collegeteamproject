@@ -168,8 +168,8 @@ class GamesController < ApplicationController
 
     @game.save!
 
-    if @game.player1_placement_done && @game.player2_placement_done
-      @game.update!(status: "ongoing")
+    if @game.player1_placement_done && @game.player2_placement_done && @game.status == "setup"
+      @game.update!(status: "ongoing", turn_started_at: Time.current)
     end
 
     render json: { board: board, message: "Ship placement finalized.", status: @game.status }
@@ -213,16 +213,18 @@ class GamesController < ApplicationController
     board = (player == 1) ? @game.player2_board : @game.player1_board
     cell = board[y][x]
 
-    if cell == "hit" || cell == "miss"
+    if cell.to_s.include?("hit_") || cell == "miss"
       render json: { error: "You already fired at that cell." }, status: :unprocessable_entity and return
     end
 
     game_over = false
+    hit = false
     if cell.to_s.start_with?("ship_")
       board[y][x] = "hit_#{cell}"
+      hit = true
       if board.flatten.none? { |c| c.to_s.start_with?("ship_") }
         @game.status = "finished_player#{player}_won"
-        message = "Hit! You sunk all opponent's ships. Player #{player} wins!"
+        message = "Hit! You sunk all opponent\'s ships. Player #{player} wins!"
         game_over = true
       else
         message = "Hit!"
@@ -230,7 +232,6 @@ class GamesController < ApplicationController
     else
       board[y][x] = "miss"
       message = "Miss!"
-      @game.current_turn = (player == 1 ? 2 : 1)
     end
 
     if player == 1
@@ -239,16 +240,31 @@ class GamesController < ApplicationController
       @game.player1_board = board
     end
 
+    @game.reset_missed_turns
+    if hit
+      @game.turn_started_at = Time.current
+    else
+      @game.switch_turn
+    end
+
     @game.save!
-    render json: { message: message, game: @game.slice("player1_board", "player2_board", "current_turn", "status"), game_over: game_over }
+    render json: { message: message, game: @game.slice("player1_board", "player2_board", "current_turn", "status", "turn_started_at"), game_over: game_over }
   end
 
   def state
+    if @game.status == "ongoing" && @game.turn_started_at && @game.turn_started_at < Time.current - Game::TURN_DURATION
+      @game.handle_turn_timeout
+    end
+
     data = @game.slice("player1_board",
                        "player2_board",
                        "current_turn",
-                       "status")
+                       "status",
+                       "turn_started_at",
+                       "player1_missed_turns",
+                       "player2_missed_turns")
     data[:players] = [ @game.player1_session, @game.player2_session ].compact.size
+    data[:turn_duration] = Game::TURN_DURATION
     render json: data
   end
 

@@ -1,11 +1,40 @@
 class Game < ApplicationRecord
+  TURN_DURATION = 30.seconds
+
   before_create :assign_uuid
   after_update :record_match_if_finished, if: :saved_change_to_status?
   belongs_to :player1, class_name: "User", optional: true
   belongs_to :player2, class_name: "User", optional: true
 
+  scope :timed_out, -> { where("turn_started_at < ?", Time.current - TURN_DURATION) }
+
   def to_param
     uuid
+  end
+
+  def switch_turn
+    self.current_turn = (current_turn == 1 ? 2 : 1)
+    self.turn_started_at = Time.current
+  end
+
+  def reset_missed_turns
+    if current_turn == 1
+      self.player1_missed_turns = 0
+    else
+      self.player2_missed_turns = 0
+    end
+  end
+
+  def handle_turn_timeout
+    if current_turn == 1
+      self.player1_missed_turns += 1
+      self.status = "finished_player2_won" if player1_missed_turns >= 2
+    else
+      self.player2_missed_turns += 1
+      self.status = "finished_player1_won" if player2_missed_turns >= 2
+    end
+    switch_turn unless status.starts_with?("finished")
+    save!
   end
 
   private

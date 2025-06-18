@@ -19,10 +19,12 @@ export default class extends Controller {
     console.log("Game controller connected.");
     console.log("Game UUID:", this.uuidValue, "Player:", this.playerValue);
     this.pollInterval = setInterval(() => this.pollGameState(), 3000);
+    this.timerInterval = setInterval(() => this.updateTimer(), 1000);
   }
   
   disconnect() {
     if (this.pollInterval) clearInterval(this.pollInterval);
+    if (this.timerInterval) clearInterval(this.timerInterval);
   }
   
   fire(event) {
@@ -48,6 +50,7 @@ export default class extends Controller {
         if (data.game.status.startsWith("finished")) {
           this.showGameOverButtons(data.game.status);
           clearInterval(this.pollInterval);
+          clearInterval(this.timerInterval);
         }
       }
     })
@@ -63,10 +66,12 @@ export default class extends Controller {
     })
     .then(response => response.json())
     .then(game => {
+      this.game = game;
       this.updateBoard(game);
       if (game.status.startsWith("finished")) {
         this.showGameOverButtons(game.status);
         clearInterval(this.pollInterval);
+        clearInterval(this.timerInterval);
       }
     })
     .catch(error => console.error("Polling error:", error));
@@ -207,6 +212,29 @@ export default class extends Controller {
       turnInfo.textContent = `Current turn: Player ${game.current_turn}`;
     }
   }
+
+  updateTimer() {
+    const timerDiv = document.getElementById("timer");
+    if (!this.game || !this.game.turn_started_at || this.game.status.startsWith("finished")) {
+      if (timerDiv) {
+        timerDiv.textContent = "";
+      }
+      return;
+    }
+
+    const turnStartedAt = new Date(this.game.turn_started_at).getTime();
+    const now = new Date().getTime();
+    const timeElapsed = Math.floor((now - turnStartedAt) / 1000);
+    const timeRemaining = this.game.turn_duration - timeElapsed;
+
+    if (timerDiv) {
+      if (timeRemaining > 0) {
+        timerDiv.textContent = `Time remaining: ${timeRemaining}s`;
+      } else {
+        timerDiv.textContent = "Time's up!";
+      }
+    }
+  }
   
   showGameOverButtons(status) {
     const container = document.createElement("div");
@@ -233,11 +261,5 @@ export default class extends Controller {
     container.appendChild(buttonContainer);
 
     document.getElementById("message").appendChild(container);
-  }
-
-  wasShipBefore(game, row, col) {
-    const originalBoard = this.playerValue === 1 ? game.original_player1_board : game.original_player2_board;
-    const value = originalBoard?.[row]?.[col];
-    return typeof value === "string" && value.startsWith("ship_");
   }
 }
